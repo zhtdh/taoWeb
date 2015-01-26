@@ -246,11 +246,41 @@ def setArticle(p_dict,p_rtn):
     '''
     if "article" not in p_dict:
         raise AppException('上传参数错误')
-    p_article = p_dict['article']
+    p_article = p_dict['article'].copy()
+    if 'state' not in p_article:
+        raise AppException('上传参数错误')
+    p_article.update({
+        'parent_id':p_article['parentid']
+    })
+    del p_article['parentid']
+    state = p_article['state']
+    del p_article['state']
+    if state == 'new':
+        new_article = Article(**p_article)
+        new_article.save()
+    elif state == 'dirty':
+        id = p_article['id']
+        del p_article['id']
+        Article.objects.filter(id=id).update(**p_article)
+    elif state == 'clean':
+        pass
+    else:
+        raise AppException('上传参数错误')
+    p_rtn.update({
+        "rtnInfo": "成功",
+        "rtnCode": 1,
+    })
+def deleteArticle(p_dict,p_rtn):
+    if 'articleId' not in p_dict:
+        raise AppException('上传参数错误')
+    Article.objects.filter(id=p_dict['articleId']).delete()
+    p_rtn.update({
+        "rtnInfo": "成功",
+        "rtnCode": 1,
+    })
 
-    pass
 
-def dealREST(request):
+def dealREST_1(request):
     l_rtn = {
             "alertType": 0,
             "error":[],
@@ -258,9 +288,10 @@ def dealREST(request):
             "rtnCode": -1,
             "exObj":{}
         }
-    lPost = json.loads(list(request.POST.keys())[0]);
-    log(lPost);
     try:
+        lPost = json.loads(list(request.POST.keys())[0]);
+        log(lPost);
+
         #POST:{'{"func":"userlogin","ex_parm":{"user":{"name":"啊啊啊","md5":"897503af4d680930e913c669eaf0d1b2"}}}': ''},
         lFunc = lPost['func']
         lParm = lPost['ex_parm']
@@ -281,7 +312,7 @@ def dealREST(request):
         for q in connection.queries:
             log(q)
     return ( HttpResponse(json.dumps(l_rtn, ensure_ascii=False)))
-def dealPAjax(request):
+def dealREST(request):
     l_rtn = {
             "alertType": 0,
             "error":[],
@@ -291,8 +322,10 @@ def dealPAjax(request):
         }
 
     try:
-        ldict = json.loads(request.POST['jpargs'])
-        log(ldict)
+        ldict = json.loads(list(request.POST.keys())[0]);
+        log(ldict);
+        #ldict = json.loads(request.POST['jpargs'])
+        #log(ldict)
         if 'ex_parm' not in ldict or 'func' not in ldict:
             raise AppException('传入参数错误')
         with transaction.atomic():
