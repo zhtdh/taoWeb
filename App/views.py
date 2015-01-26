@@ -258,16 +258,15 @@ def dealREST(request):
             "rtnCode": -1,
             "exObj":{}
         }
-    log(request);
+    lPost = json.loads(list(request.POST.keys())[0]);
+    log(lPost);
     try:
         #POST:{'{"func":"userlogin","ex_parm":{"user":{"name":"啊啊啊","md5":"897503af4d680930e913c669eaf0d1b2"}}}': ''},
-
-        lFunc = json.loads(request.POST['func'])
-        lParm = json.loads(request.POST['ex_parm'])
-
+        lFunc = lPost['func']
+        lParm = lPost['ex_parm']
         if lFunc == 'userlogin':
             log(lParm);
-            l_rtn.rtnCode = 1;
+            l_rtn["rtnCode"] = 1;
             return ( HttpResponse(json.dumps(l_rtn, ensure_ascii=False)))
     except Exception as e:
         log("ajaxResp.dealPAjax执行错误：%s" % str(e.args))

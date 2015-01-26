@@ -124,7 +124,7 @@ angular.module('blac-util', ['angular-md5'])
     var lpUrl = '/rest/';
     var httpQ = function(aUrl, aObject){
       var deferred = $q.defer();
-      $http.post(aUrl, { jpargs : aObject })
+      $http.post(aUrl, aObject )
         .success(function (data, status, headers, config) {
           deferred.resolve(data || []);
         })
