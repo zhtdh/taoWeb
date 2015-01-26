@@ -1,0 +1,88 @@
+--其余页面，对于没有登录的访问，要导航到登录页面(登录页面要跳过这个验证)。
+{"rtnCode":0,"rtnInfo":"登录不成功。testOk","alertType":0,
+ "error":[],"exObj":{},"appendOper": "login"
+}
+
+
+=======================================================================
+
+------------
+管理后台栏目
+-------------
+ajax查询栏目
+{ func: 'getAdminColumn', ex_parm:{ }}
+django返回：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{columnTree:[...]}}
+
+ajax更改栏目内容：
+{ func: 'setAdminColumn', ex_parm:{ columnTree: [...] }}
+django返回：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{columnTree:[...]}}
+
+columnTree的格式(对应表column: id, parentid, kind, title, link.)：
+"id": "C67743685CF00001FFEB15602B167D",
+"parentId": 0,
+"title": "新节点1",
+"state": "clean",
+"ex_parm": { kind:"1234", link:"12345"},
+"items": []
+
+查询和更新的格式：所有数据都在一个id为0的根节点下面。
+[
+  {
+    "id": 0,
+    "title": "根",
+    "items": [
+      {
+        "id": "C67743685CF00001FFEB15602B167D",
+        "parentId": 0,
+        "title": "新节点1",
+        "state": "clean",
+        "ex_parm": { kind:"", link:""},
+        "items": []
+      },
+      {
+        "id": "C6774368B3B00001BC2E1ADDA21250",
+        "parentId": 0,
+        "title": "新节点2",
+        "state": "clean",
+        "ex_parm": {},
+        "items": [
+          {
+            "id": "C6774369662000016E691B00C0E5C0",
+            "parentId": "C6774368B3B00001BC2E1ADDA21250",
+            "title": "新节点3",
+            "state": "clean",
+            "ex_parm": {},
+            "items": []
+          },
+          {
+            "id": "C6774369A870000140FF1FD05793B0",
+            "parentId": "C6774368B3B00001BC2E1ADDA21250",
+            "title": "新节点4",
+            "state": "clean",
+            "ex_parm": {},
+            "items": []
+          }
+        ]
+      },
+      {
+        "id": "C677436947F00001F55624694217F2",
+        "parentId": 0,
+        "title": "新节点5",
+        "state": "clean",
+        "ex_parm": {},
+        "items": []
+      }
+    ],
+    "deleteId": [xxx, xxx]
+  }
+]
+
+
+state说明：
+  new：生成insert，
+  dirty：生成update语句。
+  clean：不用
+
+根节点下面有个"deleteId": [xxx,xxx]。生成delete语句。并且把所有他下面的子节点全部删除（注意多级节点、孩子、孙子、重孙子）

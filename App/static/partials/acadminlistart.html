@@ -1,0 +1,117 @@
+<div ng-controller="ctrlAdminListArt">
+  <br>
+  <div id="alt_info" ng-show="rtnInfo" class="alert">
+    <span ng-bind="rtnInfo"></span>
+  </div>
+  <h4 class="sub-header">
+    信息发布
+    <span style="font-size: 0.5em;"><button ng-click="editArticle(0)" type="button" class="btn btn-info btn-xs">增加</button></span>
+  </h4>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th width="300px;">标题</th>
+        <th>发布人</th>
+        <th>发布时间</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr  ng-repeat='ctListItem in contentList' >
+          <td>{{$index + 1}}</td>
+          <td><a href="" > {{ctListItem.title}} {{ ctListItem.id }} </a></td>
+          <td>{{ctListItem.recname}}</td>
+          <td>{{ctListItem.rectime}}</td>
+          <td> <button ng-click="editArticle(ctListItem.id)" type="button" class="btn btn-info btn-xs">改</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <nav>
+    <ul class="pagination">
+      <li ng-class="contentHasPrior?'good':'disabled'"><a href="#" ng-click="psGetContent(-1)"><i class="glyphicon glyphicon-fast-backward"></i> </a></li>
+      <li ng-class="contentHasPrior?'good':'disabled'"><a href="#" ng-click="psGetContent(-2)"><i class="glyphicon glyphicon-chevron-left"></i> </a></li>
+      <li><a href="#" class="focus">1</a></li>
+      <li ng-class="contentHasLast?'good':'disabled'" ><a href="#" ng-click="psGetContent(-3)"><i class="glyphicon glyphicon-chevron-right"></i> </a></li>
+      <li ng-class="contentHasLast?'good':'disabled'" ><a href="#" ng-click="psGetContent(-4)"><i class="glyphicon glyphicon-fast-forward"></i> </a></li>
+    </ul>
+  </nav>
+
+
+  <!-- 编辑单记录的article  -->
+  <div  class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 100%; height:100%;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">编辑信息</h4>
+        </div>
+        <div class="modal-body">
+          {{ singArticle.id }} --
+          {{ singArticle.parentid }}
+          <form class="form-horizontal" role="form">
+            <div class="form-group">
+              <label for="inputTitle" class="col-sm-2 control-label">标题：</label>
+              <div class="col-sm-10">
+                <input ng-model="singArticle.title" type="text" class="form-control" id="inputTitle" placeholder="标题">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputContent" class="col-sm-2 control-label">内容：</label>
+              <div class="col-sm-10">
+                <script id="uEditor" type="text/plain" style="width:100%;height:200px;"></script>
+                <textarea ng-model="singArticle.content" id="inputContent" class="form-control" rows="1"></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="inputVideolink" class="col-sm-2 control-label">视频:</label>
+              <div class="col-sm-10">
+                <input ng-model="singArticle.videolink" type="text" class="form-control" id="inputVideolink" placeholder="http://">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputImglink" class="col-sm-2 control-label">图片:</label>
+              <div class="col-sm-10">
+                <input ng-model="singArticle.imglink" type="text" class="form-control" id="inputImglink" placeholder="http://">
+              </div>
+            </div>
+            <div class="form-group" ng-hide="true">
+              <label for="inputRecname" class="col-sm-2 control-label">录入人</label>
+              <div class="col-sm-10">
+                <input ng-model="singArticle.recname" type="text" class="form-control" id="inputRecname" placeholder="record man">
+              </div>
+            </div>
+            <div class="form-group"  ng-hide="true">
+              <label for="inputRectime" class="col-sm-2 control-label">时间</label>
+              <div class="col-sm-10">
+                <input ng-model="singArticle.rectime" type="text" class="form-control" id="inputRectime" placeholder="2010-01-01">
+              </div>
+            </div>
+          </form>
+
+        <div class="modal-footer">
+
+          <button type="button" ng-click="saveArticle()" class="btn btn-primary">保存</button>
+          <button type="button" ng-click="wrapConfirm('确认删除么？', deleteArticle)"  class="btn btn-danger">删除</button>
+          <button type="button" ng-click="closeArticle()" class="btn btn-default" > 关闭 </button>
+          <button type="button" onclick="var ue = UE.getEditor('uEditor');" class="btn btn-default" > 加载editor </button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $().ready(function(){
+    var ue = UE.getEditor('uEditor');
+  });
+
+</script>

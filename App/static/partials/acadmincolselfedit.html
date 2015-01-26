@@ -1,0 +1,16 @@
+
+  <h3 class="sub-header">编辑内容</h3>
+
+    <form>
+      <input ng-model="clickNode.id" class="form-control" type="text" name="nodeid"
+           class="form-control"  placeholder="id" required >
+
+      <input ng-change="nodeTitleChanged(clickNode)" ng-model="clickNode.title" class="form-control" id="nodetitle" name="nodetitle" type="text"
+           placeholder="标题" required />
+
+      <input ng-change="nodeTitleChanged(clickNode)" ng-model="clickNode.ex_parm.link" class="form-control" id="nodetitle" name="nodetitle" type="text"
+             placeholder="特殊连接" required />
+
+      <input ng-change="nodeTitleChanged(clickNode)" ng-model="clickNode.ex_parm.kind" class="form-control" id="nodetitle" name="nodetitle" type="text"
+             placeholder="类型" required />
+    </form>

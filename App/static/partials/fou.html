@@ -1,0 +1,102 @@
+
+<div class="row " style="height:300px;padding-left:15px">
+  <img class="img-responsive block-shadow" src="img/top3.jpg">
+</div>
+
+<br>
+
+<div class="row" >
+  <div class="col-xs-3">
+     <div class="list-group block-shadow">
+        <a href="#/sec" class="list-group-item active" style="font-size: 12px;">
+          应用解决方案
+        </a>
+        <a href="#" class="list-group-item"><i class="glyphicon glyphicon-forward primary-color"></i> 行业应用1</a>
+        <a href="#" class="list-group-item"><i class="glyphicon glyphicon-forward primary-color"></i> 行业应用2</a>
+        <a href="#" class="list-group-item"><i class="glyphicon glyphicon-forward primary-color"></i> 行业应用3</a>
+        <a href="#" class="list-group-item"><i class="glyphicon glyphicon-forward primary-color"></i> 行业应用4</a>
+     </div>
+      <br>
+    <div class="panel-group block-shadow" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+          <a data-toggle="collapse" data-parent="#accordion" href="sec/#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          <span class="em-primary" style="color:white;font-size: 12px;"> 应用解决方案 </span>
+        </a>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            <img class = "img-responsive" src="img/headshot4.jpg" alt="iphone">
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-heading" role="tab" id="headingTwo">
+            <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="sec/#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              <span style="color:white;font-size: 12px;"> 应用解决方案2 </span>
+            </a>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            设立国家新兴产业创业投资引导基金，体现了改革的思路，基金正式运行后，更要用市场化的办法来操作！
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xs-9">
+    <ol class="breadcrumb block-shadow">
+      <li><a href="#">产品库</a></li>
+      <li><a href="#">产品1</a></li>
+    </ol>
+
+    <table class="table table-hover block-shadow">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>产品名字</th>
+        <th>产品描述</th>
+        <th>出品日期</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>产1</td>
+        <td>产品1</td>
+        <td>2012-1-2</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>产1</td>
+        <td>产品1</td>
+        <td>2012-1-2</td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td>产1</td>
+        <td>产品1</td>
+        <td>2012-1-2</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div style="text-align: center;">
+      <ul class="pagination block-shadow">
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">&raquo;</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div ui-view></div>

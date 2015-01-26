@@ -1,0 +1,106 @@
+<div class="container-fluid" >
+  <div class="row" style="min-height: 450px;" ng-controller="ctrlAdminLeft">
+    <div class="col-md-3 sidebar" style="padding-left: 0px;" >
+
+      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" style="font-size:1.2em; line-height: 1.6em; ">
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingTwo">
+            <h4 class="panel-title">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="./#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                内容编辑
+              </a>
+            </h4>
+          </div>
+          <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+            <div class="panel-body">
+
+              <script type="text/ng-template" id="items4content_renderer.html">
+                <div ui-tree-handle>
+                  <a class="btn btn-success btn-xs" data-nodrag ng-click="toggle(this)"><span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span></a>
+                  <a ng-click="clickCol4ConList(this)" > {{item4content.title}} </a>
+                </div>
+                <ol ui-tree-nodes="options" ng-model="item4content.items" ng-class="{hidden: collapsed}">
+                  <li ng-repeat="item4content in item4content.items" ui-tree-node ng-include="'items4content_renderer.html'">
+                  </li>
+                </ol>
+              </script>
+
+              <div ui-tree data-drag-enabled="false" id="tree-content-root">
+                <ol ui-tree-nodes ng-model="treeContentData" data-max-depth="5" >
+                  <li ng-repeat="item4content in treeContentData" ui-tree-node ng-include="'items4content_renderer.html'"></li>
+                </ol>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingThree">
+            <h4 class="panel-title">
+              <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="./#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                系统设置
+              </a>
+            </h4>
+          </div>
+          <div id="collapseThree" class="panel-collapse collapse " role="tabpanel" aria-labelledby="headingThree">
+            <div class="panel-body">
+              <ul class="nav nav-sidebar" >
+              <li class="active"><a href="#">更改密码</a></li>
+              <li><a href="#">用户管理</a></li>
+            </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="./#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                栏目编辑
+              </a>
+            </h4>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+
+
+
+              <script type="text/ng-template" id="items_renderer.html">
+                <div ui-tree-handle>
+                  <a class="btn btn-success btn-xs" data-nodrag ng-click="toggle(this)"><span class="glyphicon" ng-class="{'glyphicon-chevron-right': collapsed, 'glyphicon-chevron-down': !collapsed}"></span></a>
+                  <a ng-click="nodeClick(this)" > {{item.title}} </a>
+                  <a class="pull-right btn btn-danger btn-xs" data-nodrag ng-click="wrapRemove(this)"><span class="glyphicon glyphicon-remove"></span></a>
+                  <a class="pull-right btn btn-primary btn-xs" data-nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span class="glyphicon glyphicon-plus"></span></a>
+                </div>
+                <ol ui-tree-nodes="options" ng-model="item.items" ng-class="{hidden: collapsed}">
+                  <li ng-repeat="item in item.items" ui-tree-node ng-include="'items_renderer.html'">
+                  </li>
+                </ol>
+              </script>
+
+              <div ui-tree data-drag-enabled="false" id="tree-root">
+                <ol ui-tree-nodes ng-model="treeData" data-max-depth="5" >
+                  <li ng-repeat="item in treeData" ui-tree-node ng-include="'items_renderer.html'"></li>
+                </ol>
+              </div>
+              <button ng-click="saveTree()" class="btn btn-success" > save </button>
+              <button ng-click="wrapConfirm('确认放弃修改么？', initColumDefTree)" class="btn btn-success" > reset </button>
+              <button ng-click="treeExpandAll()" class="btn btn-success" > 全部展开 </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <pre class="code">{{ treeData | json }}</pre>
+
+    </div>
+
+    <div class="col-md-9 main">
+
+      <div ui-view></div>
+
+    </div>
+  </div>
+</div>
+
