@@ -4,9 +4,11 @@ from django.shortcuts import render,HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 import json
+import datetime
 from App.utils import log,AppException
 from App.models import *
 from App.ueditor.views import get_ueditor_controller
+
 def test1(request):
     return render(request, "App/test.html")
 def logon(session,p_user,p_rtn):
@@ -221,7 +223,7 @@ def getArticle(p_dict,p_rtn):
             "rtnInfo":"失败",
             "rtnCode":-1
         })
-def setArticle(p_dict,p_rtn):
+def setArticle(p_dict,p_rtn,session):
     '''
     增删改Article
     :param p_dict:{ article:{
@@ -256,62 +258,133 @@ def setArticle(p_dict,p_rtn):
     state = p_article['state']
     del p_article['state']
     if state == 'new':
+        p_article.update({
+            "recname" : session["username"],
+            "rectime" : datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        })
         new_article = Article(**p_article)
         new_article.save()
     elif state == 'dirty':
-        id = p_article['id']
-        del p_article['id']
-        Article.objects.filter(id=id).update(**p_article)
+        if session['username'] == p_article['recname'] or session['username'] == 'Admin':
+            id = p_article['id']
+            del p_article['id']
+            del p_article['recname']
+            del p_article['rectime']
+            Article.objects.filter(id=id).update(**p_article)
+        else:
+            p_rtn.update({
+                "rtnInfo": "非本人发布，不能修改",
+                "rtnCode": -1
+            })
     elif state == 'clean':
         pass
     else:
         raise AppException('上传参数错误')
     p_rtn.update({
         "rtnInfo": "成功",
-        "rtnCode": 1,
+        "rtnCode": 1
     })
-def deleteArticle(p_dict,p_rtn):
+def deleteArticle(p_dict,p_rtn,session):
     if 'articleId' not in p_dict:
         raise AppException('上传参数错误')
-    Article.objects.filter(id=p_dict['articleId']).delete()
+    old_article = Article.objects.get(id=p_dict['articleId'])
+    if session['username'] == old_article.recname or session['username'] == 'Admin':
+        old_article.delete()
+        p_rtn.update({
+            "rtnInfo": "成功",
+            "rtnCode": 1
+        })
+    else:
+        p_rtn.update({
+            "rtnInfo": "非本人发布，不能删除",
+            "rtnCode": -1
+        })
+def setUser(p_dict,p_rtn,session):
+    '''
+    维护User
+    :param p_dict: { state:"new", name: xxx , word : xxx, oldWord: xxx}
+    :param p_rtn:
+    :return:
+    '''
+    p_set = set(p_dict.keys())
+    p_checkset = set(['state','name','word','oldword'])
+    if p_set != p_checkset:
+        raise AppException('上传参数错误')
+    if session['username'] == 'Admin':
+        if p_dict['state'] == 'new':
+            new_u = User(username=p_dict['name'],pw=p_dict['word'])
+            new_u.save()
+        elif p_dict['state'] == 'dirty':
+            old_u = User.objects.get(username=p_dict['name'])
+            if old_u.pw == p_dict['oldword']:
+                old_u.pw = p_dict['word']
+                old_u.save()
+            else:
+                p_rtn.update({
+                    "rtnInfo": "失败，旧密码错误",
+                    "rtnCode": -1
+                })
+        elif p_dict['state'] == 'clean':
+            pass
+        else:
+            raise AppException('上传参数错误')
+        p_rtn.update({
+            "rtnInfo": "成功",
+            "rtnCode": 1
+        })
+    else:
+        p_rtn.update({
+            "rtnInfo": "非管理员不能维护用户",
+            "rtnCode": -1
+        })
+def deleteUser(p_dict,p_rtn,session):
+    '''
+    删除user
+    :param p_dict: { name: xxx }
+    :param p_rtn:
+    :param session:
+    :return:
+    '''
+    if 'name' not in p_dict:
+        raise AppException('上传参数错误')
+    if session['username'] == 'Admin':
+        User.objects.filter(username=p_dict['name']).delete()
+        p_rtn.update({
+            "rtnInfo": "成功",
+            "rtnCode": 1
+        })
+    else:
+        p_rtn.update({
+            "rtnInfo": "非管理员不能删除用户",
+            "rtnCode": -1
+        })
+def getUserList(p_dict,p_rtn,session):
+    '''
+    :param p_dict:{
+        pageCurrent:当前页, pageRows:一页的行数,pageTotal:共有多少页
+     }
+    :return:
+    '''
+    if 'pageCurrent' not in p_dict or 'pageRows' not in p_dict or 'pageTotal' not in p_dict:
+        raise AppException('上传参数错误')
+    firstRow = (p_dict['pageCurrent'] - 1) * p_dict['pageRows']
+    lastRow = firstRow + p_dict['pageRows']
+    users = list(User.objects.all().order_by('username').values('username')[firstRow:lastRow])
+    if p_dict['pageTotal'] == 0:
+        total = User.objects.all().count()
+    else:
+        total = -1
     p_rtn.update({
+        "alertType": 1,
+        "error":[],
         "rtnInfo": "成功",
         "rtnCode": 1,
+        "exObj":{
+            "rowCount" : total,
+            "userList" : users
+        }
     })
 
-
-def dealREST_1(request):
-    l_rtn = {
-            "alertType": 0,
-            "error":[],
-            "rtnInfo": "",
-            "rtnCode": -1,
-            "exObj":{}
-        }
-    try:
-        lPost = json.loads(list(request.POST.keys())[0]);
-        log(lPost);
-
-        #POST:{'{"func":"userlogin","ex_parm":{"user":{"name":"啊啊啊","md5":"897503af4d680930e913c669eaf0d1b2"}}}': ''},
-        lFunc = lPost['func']
-        lParm = lPost['ex_parm']
-        if lFunc == 'userlogin':
-            log(lParm);
-            l_rtn["rtnCode"] = 1;
-            return ( HttpResponse(json.dumps(l_rtn, ensure_ascii=False)))
-    except Exception as e:
-        log("ajaxResp.dealPAjax执行错误：%s" % str(e.args))
-        l_rtn = {
-            "alertType": 0,
-            "error":e.args,
-            "rtnInfo": "服务器端错误",
-            "rtnCode": -1,
-            "exObj":{}
-        }
-    finally:
-        for q in connection.queries:
-            log(q)
-    return ( HttpResponse(json.dumps(l_rtn, ensure_ascii=False)))
 def dealREST(request):
     l_rtn = {
             "alertType": 0,
@@ -350,7 +423,18 @@ def dealREST(request):
                 elif ldict['func'] == 'getArticleCont':
                     getArticle(ldict['ex_parm'],l_rtn)
                 elif ldict['func'] == 'setArticleCont':
-                    setArticle(ldict['ex_parm'],l_rtn)
+                    setArticle(ldict['ex_parm'],l_rtn,request.session)
+                elif ldict['func'] == 'deleteArticleCont':
+                    deleteArticle(ldict['ex_parm'],l_rtn,request.session)
+                elif ldict['func'] == 'setUserCont':
+                    setUser(ldict['ex_parm']['user'],l_rtn,request.session)
+                elif ldict['func'] == 'getUserList':
+                    getUserList(ldict['ex_parm']['location'],l_rtn,request.session)
+                else:
+                    l_rtn.update({
+                        "rtnInfo":"功能错误",
+                        "rtnCode":-1
+                    })
     except Exception as e:
         log("ajaxResp.dealPAjax执行错误：%s" % str(e.args))
         l_rtn = {
