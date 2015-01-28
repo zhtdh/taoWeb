@@ -135,7 +135,8 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
   {
     blacAccess.getAdminColumn().then(
       function (data) {
-        if (data.rtnCode == 1) lp.treeContentData = JSON.parse(data.exObj.columnTree)[0].items;
+          console.log(data);
+        if (data.rtnCode == 1) lp.treeContentData = data.exObj.columnTree.items;
         else console.log(data);
       },
       function (err) {
