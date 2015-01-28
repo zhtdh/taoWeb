@@ -53,7 +53,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 class User(BaseModel):
-    username = models.CharField('用户',primary_key=True,max_length=10)
+    username = models.CharField('用户',max_length=10,primary_key=True)
     pw = models.CharField('密码',max_length=40)
     def __str__(self):
         return self.username
