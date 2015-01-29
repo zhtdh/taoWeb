@@ -75,7 +75,7 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
     lp.initColumDefTree = function() {
       blacAccess.getAdminColumn().then(
         function (data) {
-          if (data.rtnCode == 1) lp.treeData = JSON.parse(data.exObj.columnTree);
+          if (data.rtnCode == 1) lp.treeData[0].items = data.exObj.columnTree.items;
             else console.log(data);
         }, function (data) {
             console.log(data);
@@ -227,12 +227,14 @@ app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,$window,$
   lp.editArticle = function(aArg){
     if (aArg == 0 ) {  // 在当前的父栏目下面增加新的内容。
       lp.singArticle = {state:"new", id: blacUtil.createUUID(), parentid:0, kind:"", title:"", content:"", imglink:"", videolink:"", recname:"", rectime:""};
+      UE.getEditor(lEditorId).setContent('');
     }
     else {  // 根据点击的articleID，搞到他的内容。
       blacAccess.getArticleCont(aArg).then(
         function(data){
           if (data.rtnCode == 1) {
-            lp.singArticle = lp.data.exObj.article;
+            lp.singArticle = data.exObj.article;
+             UE.getEditor(lEditorId).setContent(lp.singArticle.content); // 获得uEditor的内容。保存到数据字段。
           }
           else console.log("竟然会没有这个id？");
         }
