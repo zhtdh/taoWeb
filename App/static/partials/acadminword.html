@@ -1,52 +1,33 @@
 
 <h4 class="page-header">更改密码：</h4>
 
-旧密码：
-新密码：
-确认新密码：
 
 
 <form class="form-horizontal" role="form">
     <div class="form-group">
-      <label for="inputTitle" class="col-sm-2 control-label">标题：</label>
+      <label for="inputTitle" class="col-sm-2 control-label">旧密码：</label>
       <div class="col-sm-10">
-        <input ng-model="singArticle.title" type="text" class="form-control" id="inputTitle" placeholder="标题">
+        <input ng-model="oldword" type="password" class="form-control" id="oldword" placeholder="旧密码：">
       </div>
     </div>
 
-<div class="form-group">
-  <label for="inputContent" class="col-sm-2 control-label">内容：</label>
-  <div class="col-sm-10">
+    <div class="form-group">
+      <label for="inputTitle" class="col-sm-2 control-label">新密码：</label>
+      <div class="col-sm-10">
+        <input ng-model="newword" type="password" class="form-control" id="newword" placeholder="新密码：">
+      </div>
+    </div>
 
-    <script id="uEditor" type="text/plain" style="width:100%;height:200px;"></script>
+    <div class="form-group">
+      <label for="inputTitle" class="col-sm-2 control-label">确认密码：</label>
+      <div class="col-sm-10">
+        <input ng-model="confirmword" type="password" class="form-control" id="confirmword" placeholder="确认密码：">
+      </div>
+    </div>
+    <span ng-show="confirmword != newword" class="label label-danger" >  两次密码不一致。  </span>
 
-      <textarea ng-model="singArticle.content" id="inputContent" class="form-control" rows="1"></textarea>
-  </div>
-</div>
+    <button type="button" ng-click="saveWord()" class="btn btn-primary">保存</button>
 
-<div class="form-group">
-  <label for="inputVideolink" class="col-sm-2 control-label">视频:</label>
-  <div class="col-sm-10">
-    <input ng-model="singArticle.videolink" type="text" class="form-control" id="inputVideolink" placeholder="http://">
-  </div>
-</div>
-<div class="form-group">
-  <label for="inputImglink" class="col-sm-2 control-label">图片:</label>
-  <div class="col-sm-10">
-    <input ng-model="singArticle.imglink" type="text" class="form-control" id="inputImglink" placeholder="http://">
-  </div>
-</div>
-<div class="form-group" ng-hide="true">
-  <label for="inputRecname" class="col-sm-2 control-label">录入人</label>
-  <div class="col-sm-10">
-    <input ng-model="singArticle.recname" type="text" class="form-control" id="inputRecname" placeholder="record man">
-  </div>
-</div>
-<div class="form-group"  ng-hide="true">
-  <label for="inputRectime" class="col-sm-2 control-label">时间</label>
-  <div class="col-sm-10">
-    <input ng-model="singArticle.rectime" type="text" class="form-control" id="inputRectime" placeholder="2010-01-01">
-  </div>
-</div>
+
 </form>
 

@@ -23,7 +23,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('acadmin.word', {
       url: "/word",
-      templateUrl: "partials/acadminword.html"
+      templateUrl: "partials/acadminword.html",
+      controller:function($scope, blacStore, blacAccess){
+        $scope.saveWord = function(){
+          if ($scope.newword == $scope.confirmword && $scope.newword != $scope.oldword)  {
+            blacAccess.userChange(blacStore.localUser(), $scope.oldword, $scope.newword );
+          }
+        }
+      }
     })
     .state('acadmin.selflist', {
       url: "/selflist/:nodeId",
@@ -40,6 +47,10 @@ app.controller("ctrlAdminTop",function($scope,blacStore,blacAccess) {
   lp.$on(blacAccess.gEvent.login, function(){
     lp.loginedUser = blacStore.localUser();
   });
+  lp.$on(blacAccess.gEvent.broadcast, function(event, aInfo){
+    lp.broadInfo = aInfo;
+  });
+
 });
 app.controller("ctrlLogin",function($rootScope,$scope,$location,blacStore,blacAccess) {
   var lp = $scope;
@@ -58,7 +69,7 @@ app.controller("ctrlLogin",function($rootScope,$scope,$location,blacStore,blacAc
       else{
         lp.rtnInfo = data.rtnInfo;
       }
-    }, function (error) {  lp.rtnInfo = JSON.stringify(status); });
+    }, function (error) {  lp.rtnInfo = JSON.stringify(error); });
   };
 });
 app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$http) {

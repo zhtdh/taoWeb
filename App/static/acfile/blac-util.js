@@ -120,8 +120,9 @@ angular.module('blac-util', ['angular-md5'])
       setLog:function(aObj){return(l_store.setItem('blacStoreStateLog', JSON.stringify(aObj))) ;}
     };
   })   // 本地存储支持
-  .factory('blacAccess', function($location,$http,$q,md5){
+  .factory('blacAccess', function($location,$http,$q,md5,$rootScope){
     var lpUrl = '/rest/';
+    var gEvent = { login:'event:login', broadcast:'event:broadcast' }
     var httpQ = function(aUrl, aObject){
       var deferred = $q.defer();
       /* $http.post(aUrl, aObject )
@@ -132,7 +133,7 @@ angular.module('blac-util', ['angular-md5'])
           deferred.reject(status);
         });
       */
-
+      $rootScope.$broadcast(gEvent.broadcast, "访问服务器...");
       $.ajax({
         async: false,
         crossDomain: false, // obviates need for sameOrigin test
@@ -141,10 +142,14 @@ angular.module('blac-util', ['angular-md5'])
         url: aUrl,
         data: {jpargs: JSON.stringify(aObject)},
         success: function (returnData, returnMsg, ajaxObj, msgShow) {
-            deferred.resolve(returnData || []);
+          deferred.resolve(returnData || []);
+          var lrtn = "ok";
+          if (returnData.hasOwnProperty('rtnInfo')) lrtn = returnData.rtnInfo;
+            $rootScope.$broadcast(gEvent.broadcast, "访问服务器..." + lrtn);
         },
           error: function (xhr, msg, e) {
             deferred.reject(msg);
+            $rootScope.$broadcast(gEvent.broadcast, "访问服务器错误：" + msg);
         }
       });
 
@@ -167,24 +172,22 @@ angular.module('blac-util', ['angular-md5'])
         };
       return true;
     };
-    var userChange = function(aObjUser){
-      aObjUser.md5 = md5.createHash(aObjUser.name+aObjUser.word) ;
-      aObjUser.oldmd5 = md5.createHash(aObjUser.name+aObjUser.oldword) ;
-      return httpQ(lpUrl, { func: 'userChange',  ex_parm:{user:aobjUser}})
-    };
 
     return {   // xxx().then(function(data){}, function(err){})
       userLoginQ: userLoginQ,
+      userChange:function(aUser,aOld,aNew){return httpQ( lpUrl,{func:'userChange',
+        ex_parm:{user:aUser,old:md5.createHash(aUser+aOld), new: md5.createHash(aUser+aNew)}})},
       getAdminColumn:function(){return httpQ(lpUrl,{func:'getAdminColumn',ex_parm:{} })},
       setAdminColumn:function(aArgs){return httpQ(lpUrl,{func:'setAdminColumn',ex_parm:{columnTree: aArgs } })},
       getArticleList:function(aColId,aLoc){return httpQ(lpUrl,{func:'getArticleList',ex_parm:{columnId:aColId,location:aLoc} })},
       getArticleCont:function(aArtId){return httpQ(lpUrl,{func:'getArticleCont',ex_parm:{articleId:aArtId} })},
       setArticleCont:function(aArtObj){return httpQ(lpUrl,{func:'setArticleCont',ex_parm:{article:aArtObj} })},
       deleteArticleCont:function(aArtId){return httpQ(lpUrl,{func:'deleteArticleCont',ex_parm:{articleId:aArtId} })},
+      deleteArticleCont:function(aArtId){return httpQ(lpUrl,{func:'deleteArticleCont',ex_parm:{articleId:aArtId} })},
+
+
       checkRtn: checkRtn,
-
-      gEvent:{ login:'event:login' }
-
+      gEvent:gEvent
     } ;
 
       /*

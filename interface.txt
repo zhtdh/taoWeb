@@ -141,3 +141,14 @@ django返回：
 {"rtnCode":-1,"rtnInfo":"登录不成功。testOk","alertType":0,"error":[],"exObj":{}}
 ================================================================
 
+
+用户更改密码：
+jpargs:{
+  "func":"userChange",
+  "ex_parm":{
+    "user":"Admin",
+    "old":"89dc2302d644609526f8bee192df43e3",
+    "new":"0977648895559d3a4420c397bc6cf98d"
+  }
+}
+
