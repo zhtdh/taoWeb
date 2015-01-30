@@ -4,7 +4,7 @@
     <data-source source="LOCAL" name="Django default" uuid="d80c3833-3054-4067-84e9-0f02ef21afb2">
       <driver-ref>sqlite.xerial</driver-ref>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:E:\pyPrj\taoWeb\db.sqlite3</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db.sqlite3</jdbc-url>
       <libraries />
     </data-source>
     <data-source source="LOCAL" name="SQLite - db.sqlite3" uuid="fb78ab96-c94d-4d0d-aebe-2ad96df368a0">

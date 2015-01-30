@@ -11,13 +11,15 @@ from App.ueditor.views import get_ueditor_controller
 
 def test1(request):
     return render(request, "App/test.html")
+#def paramCheck()
 def logon(session,p_user,p_rtn):
-    ''' in structure
-    { func: 'userlogin', ex_parm:{ user: { md5: "6547436690a26a399603a7096e876a2d"
+    '''
+
+    :param session:
+    :param p_user: { md5: "6547436690a26a399603a7096e876a2d"
                                            name: "aaa" }
-                                 }
-    }
-    ls_err = ''
+    :param p_rtn:
+    :return:
     '''
     ls_name = p_user['name']
     ls_pw = p_user['md5']
@@ -44,7 +46,7 @@ def logon(session,p_user,p_rtn):
 def saveArticleType(p_AType):
     if str(p_AType['id']) == '0':
         if not ArticleType.objects.filter(id='0').exists():
-            root = ArticleType(id='0',title='根',parent=None)
+            root = ArticleType(id='0',title='根',parent_id=None)
             root.save()
     else:
         if p_AType['state'] == 'new':
@@ -415,7 +417,7 @@ def dealREST(request):
                 #         "appendOper": "login"
                 #     },ensure_ascii=False), content_type="application/javascript")
                 if ldict['func'] == 'setAdminColumn':
-                    dealArticleType(ldict['ex_parm']['columnTree'],l_rtn)
+                    dealArticleType(ldict['ex_parm']['columnTree'][0],l_rtn)
                 elif ldict['func'] == 'getAdminColumn':
                     getArticleType(l_rtn)
                 elif ldict['func'] == 'getArticleList':
