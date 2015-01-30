@@ -1,0 +1,143 @@
+全部基于post的方式。
+====================================================================
+表column: id, parentid, kind, title, link.
+表article: id, parentid, kind, title, content, imglink, videolink, recname, rectime.
+=====================================================================
+-----------
+用户登录：
+-----------
+{ func: 'userlogin', ex_parm:{ user: { md5: "6547436690a26a399603a7096e876a2d"
+                                       name: "aaa" }
+-----------------
+django返回：
+--成功：
+{"rtnCode":1,"rtnInfo":"登录成功。testOk","alertType":0,"error":[],"exObj":{}}
+--失败：
+{"rtnCode":-1,"rtnInfo":"登录不成功。testOk","alertType":0,"error":[],"exObj":{}}
+
+--其余页面，对于没有登录的访问，要导航到登录页面(登录页面要跳过这个验证)。
+{"rtnCode":0,"rtnInfo":"登录不成功。testOk","alertType":0,
+ "error":[],"exObj":{},"appendOper": "login"
+}
+=====================================================================================
+------------
+管理后台栏目
+-------------
+ajax查询栏目
+{ func: 'getAdminColumn', ex_parm:{ } }
+------------------
+django返回：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{columnTree:[...]}}
+========================================
+ajax更改栏目内容：
+{ func: 'setAdminColumn', ex_parm:{ columnTree: [...] }}
+------------------
+django返回：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{columnTree:[...]}}
+
+columnTree的格式(对应表column: id, parentid, kind, title, link.)：
+"id": "C67743685CF00001FFEB15602B167D",
+"parentId": 0,
+"title": "新节点1",
+"state": "clean",
+"ex_parm": { kind:"1234", link:"12345"},
+"items": []
+
+查询和更新的格式：所有数据都在一个id为0的根节点下面。
+[
+  {
+    "id": 0,
+    "title": "根",
+    "items": [
+      {
+        "id": "C67743685CF00001FFEB15602B167D",
+        "parentId": 0,
+        "title": "新节点1",
+        "state": "clean",
+        "ex_parm": { kind:"", link:""},
+        "items": []
+      },
+      ....
+    ],
+    "deleteId": [xxx, xxx]
+  }
+]
+------------------
+state说明：
+  new：生成insert，
+  dirty：生成update语句。
+  clean：不用
+------------------
+根节点下面有个"deleteId": [xxx,xxx]。生成delete语句。并且把所有他下面的子节点全部删除（注意多级节点、孩子、孙子、重孙子）
+
+=============================================================================================================
+--------------
+列出栏目下的article列表。
+-------------
+{ func: 'getArticleList', ex_parm:{ columnId:"xxxx" ,  location: { pageCurrent:当前页, pageRows:一页的行数, pageTotal:共有多少页 } } }
+如果pageTotal是0，就select count(*)，返回rowCount.不然就不用管，返回rowCount:-1。
+----------------
+django返回：
+成功：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{ rowCount:xxx,  contentList: [ {id:xx, title:xx, recname:xx, rectime:xxxx},...] } }
+失败：
+{"rtnCode":-1,"rtnInfo":"登录不成功。testOk","alertType":0,"error":[],"exObj":{}}
+
+=============================================================================================================
+article表的维护：
+查询：
+{ func: 'getArticleCont', ex_parm:{ articleId: xxx } }
+------------------
+django返回：
+成功：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{ article:
+  { id: xxx, parentid:0, kind:"", title:"", content:"", imglink:"", videolink:"", recname:"", rectime:""}
+失败：
+{"rtnCode":-1,"rtnInfo":"失败。","alertType":0,"error":[],"exObj":{}}
+=====================
+article表的添加、更改：
+{ func: 'setArticleCont', ex_parm:{ article:
+  { state:"new", id: blacUtil.createUUID(), parentid:0, kind:"", title:"", content:"", imglink:"", videolink:"", recname:"", rectime:""}
+state说明：
+  new：生成insert，
+  dirty：生成update语句。
+  clean：不用
+---
+article表的删除：
+{ func: 'deleteArticleCont',  ex_parm:{ articleId: xxx } }
+-------------------
+django返回：
+成功：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{}}
+失败：
+{"rtnCode":-1,"rtnInfo":"失败。","alertType":0,"error":[],"exObj":{}}
+================================================================
+user表的添加、更改：
+{ func: 'setUserCont', ex_parm:{ user: { state:"new", name: xxx , word : xxx, oldWord: xxx} }}
+state说明：
+  new：生成insert，
+  dirty：生成update语句。
+  clean：不用
+---
+user表的删除：
+{ func: 'deleteUserCont',  ex_parm:{ name: xxx } }
+-------------------
+django返回：
+成功：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{}}
+失败：
+{"rtnCode":-1,"rtnInfo":"失败。","alertType":0,"error":[],"exObj":{}}
+
+--------------
+列出USER栏目下的user列表。
+-------------
+{ func: 'getUserList', ex_parm:{ location: { pageCurrent:当前页, pageRows:一页的行数, pageTotal:共有多少页 } } }
+如果pageTotal是0，就select count(*)，返回rowCount.不然就不用管，返回rowCount:-1。
+----------------
+django返回：
+成功：
+{"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{ rowCount:xxx,  userList: [ {name:xx},...] } }
+失败：
+{"rtnCode":-1,"rtnInfo":"登录不成功。testOk","alertType":0,"error":[],"exObj":{}}
+================================================================
+

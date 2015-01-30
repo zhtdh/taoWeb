@@ -3,12 +3,6 @@
  */
 var app = angular.module('blacapp', ['ui.router', 'blac-util', 'ui.tree']);
 
-app.config(function($httpProvider) {
-    $httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded';
-    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-});
-
-
 app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/login"); // For any unmatched url, redirect.
   $stateProvider

@@ -124,13 +124,30 @@ angular.module('blac-util', ['angular-md5'])
     var lpUrl = '/rest/';
     var httpQ = function(aUrl, aObject){
       var deferred = $q.defer();
-      $http.post(aUrl, aObject )
+      /* $http.post(aUrl, aObject )
         .success(function (data, status, headers, config) {
           deferred.resolve(data || []);
         })
         .error(function (data, status, headers, config) {
           deferred.reject(status);
         });
+      */
+
+      $.ajax({
+        async: false,
+        crossDomain: false, // obviates need for sameOrigin test
+        type: 'POST',
+        dataType: 'json',
+        url: aUrl,
+        data: {jpargs: JSON.stringify(aObject)},
+        success: function (returnData, returnMsg, ajaxObj, msgShow) {
+            deferred.resolve(returnData || []);
+        },
+          error: function (xhr, msg, e) {
+            deferred.reject(msg);
+        }
+      });
+
       return deferred.promise;
     };
     var userLoginQ = function(aObjUser) {

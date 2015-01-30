@@ -397,10 +397,10 @@ def dealREST(request):
         }
 
     try:
-        ldict = json.loads(list(request.POST.keys())[0]);
+        log(request.POST);
+        ldict = json.loads(request.POST['jpargs']);
         log(ldict);
-        #ldict = json.loads(request.POST['jpargs'])
-        #log(ldict)
+
         if 'ex_parm' not in ldict or 'func' not in ldict:
             raise AppException('传入参数错误')
         with transaction.atomic():
