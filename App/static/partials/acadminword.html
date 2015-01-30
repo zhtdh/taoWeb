@@ -1,0 +1,52 @@
+
+<h4 class="page-header">更改密码：</h4>
+
+旧密码：
+新密码：
+确认新密码：
+
+
+<form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label for="inputTitle" class="col-sm-2 control-label">标题：</label>
+      <div class="col-sm-10">
+        <input ng-model="singArticle.title" type="text" class="form-control" id="inputTitle" placeholder="标题">
+      </div>
+    </div>
+
+<div class="form-group">
+  <label for="inputContent" class="col-sm-2 control-label">内容：</label>
+  <div class="col-sm-10">
+
+    <script id="uEditor" type="text/plain" style="width:100%;height:200px;"></script>
+
+      <textarea ng-model="singArticle.content" id="inputContent" class="form-control" rows="1"></textarea>
+  </div>
+</div>
+
+<div class="form-group">
+  <label for="inputVideolink" class="col-sm-2 control-label">视频:</label>
+  <div class="col-sm-10">
+    <input ng-model="singArticle.videolink" type="text" class="form-control" id="inputVideolink" placeholder="http://">
+  </div>
+</div>
+<div class="form-group">
+  <label for="inputImglink" class="col-sm-2 control-label">图片:</label>
+  <div class="col-sm-10">
+    <input ng-model="singArticle.imglink" type="text" class="form-control" id="inputImglink" placeholder="http://">
+  </div>
+</div>
+<div class="form-group" ng-hide="true">
+  <label for="inputRecname" class="col-sm-2 control-label">录入人</label>
+  <div class="col-sm-10">
+    <input ng-model="singArticle.recname" type="text" class="form-control" id="inputRecname" placeholder="record man">
+  </div>
+</div>
+<div class="form-group"  ng-hide="true">
+  <label for="inputRectime" class="col-sm-2 control-label">时间</label>
+  <div class="col-sm-10">
+    <input ng-model="singArticle.rectime" type="text" class="form-control" id="inputRectime" placeholder="2010-01-01">
+  </div>
+</div>
+</form>
+

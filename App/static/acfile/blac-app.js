@@ -21,6 +21,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
           $scope.items = ["acAc", "Listac", "acOf", "acItems"];
       }
     })
+    .state('acadmin.word', {
+      url: "/word",
+      templateUrl: "partials/acadminword.html"
+    })
     .state('acadmin.selflist', {
       url: "/selflist/:nodeId",
       templateUrl: "partials/acadmincolselfedit.html"
@@ -220,7 +224,7 @@ app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,$window,$
 
   lp.editArticle = function(aArg){
     if (aArg == 0 ) {  // 在当前的父栏目下面增加新的内容。
-      lp.singArticle = {state:"new", id: blacUtil.createUUID(), parentid:0, kind:"", title:"", content:"", imglink:"", videolink:"", recname:"", rectime:""};
+      lp.singArticle = {state:"new", id: blacUtil.createUUID(), parentid:lColumnId, kind:"", title:"", content:"", imglink:"", videolink:"", recname:"", rectime:""};
       UE.getEditor(lEditorId).setContent('');
     }
     else {  // 根据点击的articleID，搞到他的内容。
