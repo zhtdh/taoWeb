@@ -1,0 +1,38 @@
+<div ng-controller="ctrlAdminListUser">
+  <br>
+
+  <h4 class="sub-header">
+    用户管理
+    <span style="font-size: 0.5em;">
+      <button ng-click="editUser(-1)" type="button" class="btn btn-info btn-xs">增加</button>
+    </span>
+  </h4>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>#</th>
+        <th width="300px;">用户名</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr  ng-repeat='ctListItem in contentList' >
+          <td>{{$index + 1}}</td>
+          <td><a href="" > {{ctListItem.name}} </a></td>
+          <td> <button ng-click="editArticle(ctListItem.name)" type="button" class="btn btn-info btn-xs">删</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <nav>
+    <ul class="pagination">
+      <li ng-class="contentHasPrior?'good':'disabled'"><a href="#" ng-click="psGetContent(-1)"><i class="glyphicon glyphicon-fast-backward"></i> </a></li>
+      <li ng-class="contentHasPrior?'good':'disabled'"><a href="#" ng-click="psGetContent(-2)"><i class="glyphicon glyphicon-chevron-left"></i> </a></li>
+      <li><a href="#" class="focus">{{ psContentInfo.pageCurrent }} / {{ psContentInfo.pageTotal }}</a></li>
+      <li ng-class="contentHasLast?'good':'disabled'" ><a href="#" ng-click="psGetContent(-3)"><i class="glyphicon glyphicon-chevron-right"></i> </a></li>
+      <li ng-class="contentHasLast?'good':'disabled'" ><a href="#" ng-click="psGetContent(-4)"><i class="glyphicon glyphicon-fast-forward"></i> </a></li>
+    </ul>
+  </nav>

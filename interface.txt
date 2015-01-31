@@ -3,9 +3,12 @@
 表column: id, parentid, kind, title, link.
 表article: id, parentid, kind, title, content, imglink, videolink, recname, rectime.
 =====================================================================
+
+
 -----------
 用户登录：
 -----------
+
 { func: 'userlogin', ex_parm:{ user: { md5: "6547436690a26a399603a7096e876a2d"
                                        name: "aaa" }
 -----------------
@@ -20,9 +23,12 @@ django返回：
  "error":[],"exObj":{},"appendOper": "login"
 }
 =====================================================================================
+
+
 ------------
 管理后台栏目
 -------------
+
 ajax查询栏目
 { func: 'getAdminColumn', ex_parm:{ } }
 ------------------
@@ -71,9 +77,12 @@ state说明：
 根节点下面有个"deleteId": [xxx,xxx]。生成delete语句。并且把所有他下面的子节点全部删除（注意多级节点、孩子、孙子、重孙子）
 
 =============================================================================================================
+
+
 --------------
 列出栏目下的article列表。
 -------------
+
 { func: 'getArticleList', ex_parm:{ columnId:"xxxx" ,  location: { pageCurrent:当前页, pageRows:一页的行数, pageTotal:共有多少页 } } }
 如果pageTotal是0，就select count(*)，返回rowCount.不然就不用管，返回rowCount:-1。
 ----------------
@@ -84,6 +93,7 @@ django返回：
 {"rtnCode":-1,"rtnInfo":"登录不成功。testOk","alertType":0,"error":[],"exObj":{}}
 
 =============================================================================================================
+
 article表的维护：
 查询：
 { func: 'getArticleCont', ex_parm:{ articleId: xxx } }
@@ -112,16 +122,23 @@ django返回：
 失败：
 {"rtnCode":-1,"rtnInfo":"失败。","alertType":0,"error":[],"exObj":{}}
 ================================================================
+
+---------------
 user表的添加、更改：
+------------------------
 { func: 'setUserCont', ex_parm:{ user: { state:"new", name: xxx , word : xxx, oldWord: xxx} }}
 state说明：
   new：生成insert，
   dirty：生成update语句。
   clean：不用
+
+
 ---
 user表的删除：
 { func: 'deleteUserCont',  ex_parm:{ name: xxx } }
 -------------------
+
+
 django返回：
 成功：
 {"rtnCode":1,"rtnInfo":"成功。","alertType":0,"error":[],"exObj":{}}

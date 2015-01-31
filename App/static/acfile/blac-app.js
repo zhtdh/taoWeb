@@ -39,6 +39,10 @@ app.config(function($stateProvider, $urlRouterProvider) {
     .state('acadmin.listart', {
       url: "/listart/:columnId",
       templateUrl: "partials/acadminlistart.html"
+    })
+    .state('acadmin.user', {
+      url: "/listuser",
+      templateUrl: "partials/acadminlistuser.html"
     });
 });
 
@@ -78,7 +82,7 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
   // 后台管理端：栏目设置。
   {
     lp.treeData = [{"id":0,"title":"根","items":[]}];
-    lp.treeState = {new: "new", dirty: 'dirty', clean: "clean"};
+    lp.treeState = blacAccess.dataState;
     lp.wrapConfirm = blacUtil.wrapConfirm;
 
     lp.initColumDefTree = function() {
@@ -164,77 +168,32 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
     };
   }
 });
-app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,$window,$location,$http,$stateParams) {
+app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,blacPage,$window,$location,$http,$stateParams) {
   var lp = $scope;
   var lColumnId = $stateParams.columnId;
   var lEditorId = "uEditor";
-  lp.psContentInfo = { pageCurrent: 1, pageRows: 10, pageTotal: 0  }; // init;
   lp.clickContentNode = { id : 0 };  // init;
+
+  // 查询。
+  lp.psContentInfo = { pageCurrent: 1, pageRows: 10, pageTotal: 0  }; // init;
   lp.contentList = [];
-  lp.psGetContent = function (aPageNumber) {
-    var lNoNeed = false;
-    switch (aPageNumber) {
-      case -1:
-        if (lp.psContentInfo.pageCurrent > 1) lp.psContentInfo.pageCurrent = 1; else lNoNeed = true;
-        break;
-      case -2:
-        if (lp.psContentInfo.pageCurrent > 1) lp.psContentInfo.pageCurrent -= 1; else lNoNeed = true;
-        break;
-      case -3:
-        if (lp.psContentInfo.pageCurrent < lp.psContentInfo.pageTotal) lp.psContentInfo.pageCurrent += 1; else lNoNeed = true;
-        break;
-      case -4:
-        if (lp.psContentInfo.pageCurrent < lp.psContentInfo.pageTotal) lp.psContentInfo.pageCurrent = lp.psContentInfo.pageTotal; else lNoNeed = true;
-        break;
-      case 0:
-        break
-    }
-
-    if (!lNoNeed) {
-      var lLocation = { pageCurrent: lp.psContentInfo.pageCurrent, pageRows: lp.psContentInfo.pageRows, pageTotal: lp.psContentInfo.pageTotal };
-      blacAccess.getArticleList(lColumnId, lLocation).then(
-        function (data){
-          if (data.rtnCode == 1) {
-            //"exObj":{ rowCount:xxx,  contentList: [ {id:xx, title:xx, recname:xx, rectime:xxxx},...] } }
-            if (lp.psContentInfo.pageTotal) lp.psContentInfo.pageTotal = Math.floor(data.exObj.rowCount / lp.psContentInfo.pageRows ) + 1;
-            lp.contentList = data.exObj.contentList;
-          }
-          else console.log("此栏目没有文章列表");
-          lp.contentHasPrior = true;
-          lp.contentHasLast = true;
-          if (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal) lp.contentHasLast = false;
-          if (lp.psContentInfo.pageCurrent == 1) lp.contentHasPrior = false;
-        },
-        function (err) {
-          lp.rtnInfo = JSON.stringify(err);
-        }
-      );
-      /*
-      lp.psContentInfo.pageTotal = Math.floor(23 / lp.psContentInfo.pageRows) + 1;
-      lp.contentList = [
-        {id: 'xx1', parentid:'1234', title: 'xxtitlexx111', recname: 'xx1', rectime: 'xxxx1'},
-        {id: 'xx2', parentid:'1234',title: 'xxtitlexx2222', recname: 'xx2', rectime: 'xxxx2'},
-        {id: 'xx3', parentid:'1234',title: 'xxtitlexx3333', recname: 'xx3', rectime: 'xxxx3'},
-        {id: 'xx4', parentid:'1234',title: 'xxtitlexx444', recname: 'xx2', rectime: 'xxxx2'},
-        {id: 'xx5', parentid:'1234',title: '5555555', recname: 'xx2', rectime: 'xxxx2'},
-        {id: 'xx6', parentid:'1234',title: '6666666', recname: 'xx2', rectime: 'xxxsx2'},
-        {id: 'xx7', parentid:'1234',title: '7777777', recname: 'xx2', rectime: 'xxxx2'},
-        {id: 'xx8', parentid:'1234',title: '8888888', recname: 'xx2', rectime: 'xxxx2'},
-        {id: 'xx9', parentid:'1234', title: '9999999', recname: 'xx2', rectime: 'xxxx2'},
-        {id: 'xx10', parentid:'1234', title: '1111000000', recname: 'xx2', rectime: 'xxxx2'}
-      ];
-      */
-    }
+  lp.psGetContent = function (aOffset) {
+    blacPage.psGetContent(blacAccess.getArticleList,[lp.psContentInfo, lColumnId], aOffset
+      ,function(aErr, aRtn){
+        lp.contentList = aRtn.content;
+        lp.psContentInfo = aRtn.psInfo;
+        lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
+        lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
+      });
   };
-    // 编辑和录入内容
-  lp.singArticle = {};
 
+  // 编辑和录入内容
+  lp.singArticle = {};
   lp.closeArticle = function(){
     $('#myModal').modal('toggle');
   };
-
   lp.editArticle = function(aArg){
-    if (aArg == 0 ) {  // 在当前的父栏目下面增加新的内容。
+    if (aArg == -1 ) {  // 在当前的父栏目下面增加新的内容。
       lp.singArticle = {state:"new", id: blacUtil.createUUID(), parentid:lColumnId, kind:"", title:"", content:"", imglink:"", videolink:"", recname:"", rectime:""};
       UE.getEditor(lEditorId).setContent('');
     }
@@ -256,29 +215,28 @@ app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,$window,$
     // 远程保存成功否？
 
     lp.singArticle.content = UE.getEditor(lEditorId).getContent(); // 获得uEditor的内容。保存到数据字段。
-    if (lp.singArticle.state != "new") lp.singArticle.state = "dirty"; // 设置保存。
+    if (lp.singArticle.state != blacAccess.dataState.new) lp.singArticle.state = blacAccess.dataState.dirty; // 设置保存。
 
     blacAccess.setArticleCont(lp.singArticle).then(
       function(data){
         if (data.rtnCode == 1){
-          if (lp.singArticle.state == "new") {
+          if (lp.singArticle.state == blacAccess.dataState.new) {
             lp.contentList.unshift(lp.singArticle);
-            lp.singArticle.state = "clean";
+            lp.singArticle.state = blacAccess.dataState.clean;
           }
           else{
             for (i=0;i<lp.contentList.length;i++){
               if (lp.singArticle.id ==lp.contentList[i].id ) {
                 lp.contentList[i] = lp.singArticle;
-                console.log("update");
                 break;
               }
             }
           }
+          lp.closeArticle();
         }
       }
     )
   };
-
   lp.deleteArticle = function(){
     if (lp.singArticle.state == "new") { // 直接删掉
       lp.singArticle = {};
@@ -299,7 +257,84 @@ app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,$window,$
     }
     lp.closeArticle();
   };
-  lp.psGetContent(0);
+
+  // 默认显示第一页。
+  lp.psGetContent(1);
+
+});
+app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,$window,$location,$http,$stateParams) {
+  var lp = $scope;
+  lp.clickContentNode = { id : 0 };  // init;
+  // 查询。
+  lp.psContentInfo = { pageCurrent: 1, pageRows: 10, pageTotal: 0  }; // init;
+  lp.contentList = []; // user list
+  lp.psGetContent = function (aOffset) {
+    blacPage.psGetContent(blacAccess.getUserList,[lp.psContentInfo], aOffset
+      ,function(aErr, aRtn){
+        lp.contentList = aRtn.content;
+        lp.psContentInfo = aRtn.psInfo;
+        lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
+        lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
+      });
+  };
+
+  lp.singleRecord = {};
+  lp.editRecord = function(aArg){
+    if (aArg == -1 ) {  // 在当前的父栏目下面增加新的内容。
+      lp.singleRecord = { name:"新用户", state:blacAccess.dataState.new };
+    }
+    else   // 根据点击的articleID，搞到他的内容。
+      lp.singleRecord = { name: aArg, state:blacAccess.dataState.clean };
+    $('#myModal').modal( { backdrop: "static" } );
+  };
+
+  lp.saveRecord = function(){
+    // 如果是增加，就增加到 lp.contentList 的最前面。如果是edit，就直接更新。
+    if (lp.singleRecord.state != blacAccess.dataState.new) lp.singleRecord.state = blacAccess.dataState.dirty; // 设置保存。
+
+    blacAccess.setUserCont(lp.singleRecord).then(   // here we go . not finished
+      function(data){
+        if (data.rtnCode == 1){
+          if (lp.singleRecord.state == blacAccess.dataState.new) {
+            lp.contentList.unshift(lp.singleRecord);
+            lp.singleRecord.state = blacAccess.dataState.clean;
+          }
+          else{
+            for (i=0;i<lp.contentList.length;i++){
+              if (lp.singleRecord.id ==lp.contentList[i].id ) {
+                lp.contentList[i] = lp.singleRecord;
+                break;
+              }
+            }
+          }
+          lp.closeArticle();
+        }
+      }
+    )
+  };
+  lp.deleteArticle = function(){
+    if (lp.singleRecord.state == "new") { // 直接删掉
+      lp.singleRecord = {};
+    }
+    else {
+      blacAccess.deleteArticleCont(lp.singleRecord.id).then(
+        function(data){
+          if (data.rtnCode == 1){
+            for (i=0;i<lp.contentList.length;i++){
+              if (lp.singleRecord.id ==lp.contentList[i].id ) {
+                lp.contentList.splice(i, 1);
+                break;
+              }
+            }
+          }
+        }
+      );
+    }
+    lp.closeArticle();
+  };
+
+  // 默认显示第一页。
+  lp.psGetContent(1);
 
 });
 
