@@ -48,6 +48,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
 app.controller("ctrlAdminTop",function($scope,blacStore,blacAccess) {
   var lp = $scope;
+  lp.loginedUser = blacStore.localUser();
   lp.$on(blacAccess.gEvent.login, function(){
     lp.loginedUser = blacStore.localUser();
   });
@@ -133,7 +134,7 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
       angular.element(document.getElementById("tree-root")).scope().expandAll();
     };
     lp.saveTree = function(){
-      blacAccess.setAdminColumn( JSON.stringify(lp.treeData) ).then(
+      blacAccess.setAdminColumn( JSON.stringify(lp.treeData[0]) ).then(
         function (data) {
           if (data.rtnCode == 1) console.log('save ok. ');
           else console.log(data);
@@ -278,16 +279,6 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,$window,
       });
   };
 
-  lp.singleRecord = {};
-  lp.editRecord = function(aArg){
-    if (aArg == -1 ) {  // 在当前的父栏目下面增加新的内容。
-      lp.singleRecord = { name:"新用户", state:blacAccess.dataState.new };
-    }
-    else   // 根据点击的articleID，搞到他的内容。
-      lp.singleRecord = { name: aArg, state:blacAccess.dataState.clean };
-    $('#myModal').modal( { backdrop: "static" } );
-  };
-
   lp.saveRecord = function(){
     // 如果是增加，就增加到 lp.contentList 的最前面。如果是edit，就直接更新。
     if (lp.singleRecord.state != blacAccess.dataState.new) lp.singleRecord.state = blacAccess.dataState.dirty; // 设置保存。
@@ -330,7 +321,6 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,$window,
         }
       );
     }
-    lp.closeArticle();
   };
 
   // 默认显示第一页。
