@@ -328,7 +328,7 @@ def setUser(p_dict,p_rtn,session):
             old_u = User.objects.get(username=p_dict['name'])
             if old_u.pw == p_dict['oldword']:
                 old_u.pw = p_dict['word']
-                old_u.save()
+                old_u.save(update_fields=['pw'])
             else:
                 p_rtn.update({
                     "rtnInfo": "失败，旧密码错误",
@@ -410,7 +410,11 @@ def resetPw(p_dict,p_rtn):
             raise AppException('密码错误')
         else:
             user.pw = p_dict['new']
-            user.save()
+            user.save(update_fields=['pw'])
+            p_rtn.update({
+                "rtnInfo":"成功",
+                "rtnCode":1
+            })
     except ObjectDoesNotExist:
         p_rtn.update({
             "rtnInfo":"用户名错误",
@@ -460,7 +464,9 @@ def dealREST(request):
                 elif ldict['func'] == 'setUserCont':
                     setUser(ldict['ex_parm']['user'],l_rtn,request.session)
                 elif ldict['func'] == 'getUserList':
-                    getUserList(ldict['ex_parm']['location'])
+                    getUserList(ldict['ex_parm']['location'],l_rtn)
+                elif ldict['func'] == 'userChange':
+                    resetPw(ldict['ex_parm'],l_rtn)
                 else:
                     l_rtn.update({
                         "rtnInfo":"功能错误",
