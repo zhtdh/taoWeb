@@ -56,7 +56,9 @@ def saveArticleType(p_AType):
             root = ArticleType(id='0',title='根',parent_id=None)
             root.save()
     else:
-        if p_AType['state'] == 'new':
+        if 'state' not in p_AType:
+            pass
+        elif p_AType['state'] == 'new':
             if 'id' not in p_AType:
                 raise AppException('新文章类型id非法')
             if 'parentId' not in p_AType:
