@@ -11,7 +11,14 @@ from App.ueditor.views import get_ueditor_controller
 
 def test1(request):
     return render(request, "App/test.html")
-#def paramCheck()
+def paramCheck(standard_set,target_set,check_type):
+    '''
+    检查参数是否合法
+    :param standard_set:标准set
+    :param target_set: 检验set
+    :param check_type: (‘必要’,'')
+    :return:
+    '''
 def logon(session,p_user,p_rtn):
     '''
 
@@ -109,6 +116,7 @@ def dealArticleType(p_dict,p_rtn):
     :param p_rtn: 返回结构
     :return:
     '''
+
     if 'deleteId' in p_dict:
         ArticleType.objects.filter(id__in=p_dict['deleteId']).delete()
     if 'id' in p_dict:
@@ -360,7 +368,7 @@ def deleteUser(p_dict,p_rtn,session):
             "rtnInfo": "非管理员不能删除用户",
             "rtnCode": -1
         })
-def getUserList(p_dict,p_rtn,session):
+def getUserList(p_dict,p_rtn):
     '''
     :param p_dict:{
         pageCurrent:当前页, pageRows:一页的行数,pageTotal:共有多少页
@@ -386,7 +394,28 @@ def getUserList(p_dict,p_rtn,session):
             "userList" : users
         }
     })
-
+def resetPw(p_dict,p_rtn):
+    '''
+    修改用户密码
+    :param p_dict:{ "user":"Admin",
+                    "old":"89dc2302d644609526f8bee192df43e3",
+                    "new":"0977648895559d3a4420c397bc6cf98d"
+                  }
+    :param p_rtn:
+    :return:
+    '''
+    try:
+        user = User.objects.get(username=p_dict['user'])
+        if user.pw != p_dict['old']:
+            raise AppException('密码错误')
+        else:
+            user.pw = p_dict['new']
+            user.save()
+    except ObjectDoesNotExist:
+        p_rtn.update({
+            "rtnInfo":"用户名错误",
+            "rtnCode":-1
+        })
 def dealREST(request):
     l_rtn = {
             "alertType": 0,
@@ -417,7 +446,7 @@ def dealREST(request):
                 #         "appendOper": "login"
                 #     },ensure_ascii=False), content_type="application/javascript")
                 if ldict['func'] == 'setAdminColumn':
-                    dealArticleType(ldict['ex_parm']['columnTree'][0],l_rtn)
+                    dealArticleType(ldict['ex_parm']['columnTree'],l_rtn)
                 elif ldict['func'] == 'getAdminColumn':
                     getArticleType(l_rtn)
                 elif ldict['func'] == 'getArticleList':
@@ -431,7 +460,7 @@ def dealREST(request):
                 elif ldict['func'] == 'setUserCont':
                     setUser(ldict['ex_parm']['user'],l_rtn,request.session)
                 elif ldict['func'] == 'getUserList':
-                    getUserList(ldict['ex_parm']['location'],l_rtn,request.session)
+                    getUserList(ldict['ex_parm']['location'])
                 else:
                     l_rtn.update({
                         "rtnInfo":"功能错误",
