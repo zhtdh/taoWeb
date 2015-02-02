@@ -276,28 +276,30 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,blacUtil
         lp.psContentInfo = aRtn.psInfo;
         lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
         lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
-        blacAccess.setDataState(lp.contentList, blacAccess.dataState.clean);
+        if (lp.contentList) blacAccess.setDataState(lp.contentList, blacAccess.dataState.clean);
       });
   };
   lp.singleRec = {name:"newUser", word: ""};
 
   lp.addRecord = function(){
     lp.singleRec = {name:"newUser", word:""};
-    blacAccess.setDataState(lp.singleRec, blacAccess.dataState.new);
     $('#userModal').modal( { backdrop: "static" } );
   };
 
   lp.saveRecord = function(){
     var lAdd = { name:lp.singleRec.name, word: blacUtil.md5String(lp.singleRec.name + lp.singleRec.word) };
+    blacAccess.setDataState(lAdd, blacAccess.dataState.new);
+    console.log(lAdd);
     blacAccess.setUserCont(lAdd).then(   // here we go . not finished
       function(data){
         if (data.rtnCode == 1){
           lp.contentList.unshift(lp.singleRec);
           blacAccess.dataState.setDataState(lp.singleRec, blacAccess.dataState.clean );
+          lp.closeRec();
         }
       }
     )
-    lp.closeRec();
+
   };
   lp.deleteRec = function(aName) {
     for (var i = 0; i < lp.contentList.length; i++)

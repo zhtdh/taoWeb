@@ -232,14 +232,14 @@ angular.module('blac-util', ['angular-md5'])
 
 
       getUserList:function(aLoc){return httpQ(lpUrl,{func:'getUserList',ex_parm:{ location:aLoc } })},
-      setUserCont:function(aUser){return httpQ(lpUrl,{func:'setUserList',ex_parm:{ user:aUser} })},
+      setUserCont:function(aUser){return httpQ(lpUrl,{func:'setUserCont',ex_parm:{ user:aUser} })},
 
       deleteUserCont:function(aName){return httpQ(lpUrl,{func:'deleteUserCont',ex_parm:{name :aName }} ) },
 
 
       checkRtn: checkRtn,
       dataState : dataState,
-      setDataState:function(aObj,aState){if($.isArray(aObj)) for (var i=0;i<aObj.length;i++) aObj[i]._exState=aState else aObj._exState=aState},
+      setDataState:function(aObj,aState){if($.isArray(aObj)) for(var i=0;i<aObj.length;i++)aObj[i]._exState=aState; else if(aObj) aObj._exState=aState;},
       getDataState:function(aObj) {return aObj._exState },
       gEvent:gEvent
     } ;

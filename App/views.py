@@ -318,15 +318,16 @@ def setUser(p_dict,p_rtn,session):
     :param p_rtn:
     :return:
     '''
+    p_dict = p_dict['user']
     p_set = set(p_dict.keys())
-    p_checkset = set(['state','name','word','oldword'])
+    p_checkset = set(['_exState','name','word'])
     if p_set != p_checkset:
         raise AppException('上传参数错误')
     if session['username'] == 'Admin':
-        if p_dict['state'] == 'new':
+        if p_dict['_exState'] == 'new':
             new_u = User(username=p_dict['name'],pw=p_dict['word'])
             new_u.save()
-        elif p_dict['state'] == 'dirty':
+        elif p_dict['_exState'] == 'dirty':
             old_u = User.objects.get(username=p_dict['name'])
             if old_u.pw == p_dict['oldword']:
                 old_u.pw = p_dict['word']
@@ -336,7 +337,7 @@ def setUser(p_dict,p_rtn,session):
                     "rtnInfo": "失败，旧密码错误",
                     "rtnCode": -1
                 })
-        elif p_dict['state'] == 'clean':
+        elif p_dict['_exState'] == 'clean':
             pass
         else:
             raise AppException('上传参数错误')
