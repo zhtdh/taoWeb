@@ -134,7 +134,7 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
       angular.element(document.getElementById("tree-root")).scope().expandAll();
     };
     lp.saveTree = function(){
-      blacAccess.setAdminColumn( JSON.stringify(lp.treeData[0]) ).then(
+      blacAccess.setAdminColumn( lp.treeData[0] ).then(
         function (data) {
           if (data.rtnCode == 1) console.log('save ok. ');
           else console.log(data);
