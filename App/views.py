@@ -465,6 +465,8 @@ def dealREST(request):
                     deleteArticle(ldict['ex_parm'],l_rtn,request.session)
                 elif ldict['func'] == 'setUserCont':
                     setUser(ldict['ex_parm']['user'],l_rtn,request.session)
+                elif ldict['func'] == 'deleteUserCont':
+                    deleteUser(ldict['ex_parm'],l_rtn,request.session)
                 elif ldict['func'] == 'getUserList':
                     getUserList(ldict['ex_parm']['location'],l_rtn)
                 elif ldict['func'] == 'userChange':
