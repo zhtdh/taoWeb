@@ -126,7 +126,7 @@ django返回：
 ---------------
 user表的添加、更改：
 ------------------------
-{ func: 'setUserCont', ex_parm:{ user: { state:"new", name: xxx , word : xxx, oldWord: xxx} }}
+{ func: 'setUserCont', ex_parm:{ user: [{ state:"new", name: xxx , word : xxx, oldName: xxx} ] }}
 state说明：
   new：生成insert，
   dirty：生成update语句。

@@ -134,7 +134,7 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
       angular.element(document.getElementById("tree-root")).scope().expandAll();
     };
     lp.saveTree = function(){
-      blacAccess.setAdminColumn( lp.treeData[0] ).then(
+      blacAccess.setAdminColumn( lp.treeData[0]).then(
         function (data) {
           if (data.rtnCode == 1) console.log('save ok. ');
           else console.log(data);
@@ -263,7 +263,7 @@ app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,blacPage,
   lp.psGetContent(1);
 
 });
-app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,$window,$location,$http,$stateParams) {
+app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,blacUtil) {
   var lp = $scope;
   lp.clickContentNode = { id : 0 };  // init;
   // 查询。
@@ -276,53 +276,49 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,$window,
         lp.psContentInfo = aRtn.psInfo;
         lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
         lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
+        blacAccess.setDataState(lp.contentList, blacAccess.dataState.clean);
       });
+  };
+  lp.singleRec = {name:"newUser", word: ""};
+
+  lp.addRecord = function(){
+    lp.singleRec = {name:"newUser", word:""};
+    blacAccess.setDataState(lp.singleRec, blacAccess.dataState.new);
+    $('#userModal').modal( { backdrop: "static" } );
   };
 
   lp.saveRecord = function(){
-    // 如果是增加，就增加到 lp.contentList 的最前面。如果是edit，就直接更新。
-    if (lp.singleRecord.state != blacAccess.dataState.new) lp.singleRecord.state = blacAccess.dataState.dirty; // 设置保存。
-
-    blacAccess.setUserCont(lp.singleRecord).then(   // here we go . not finished
+    var lAdd = { name:lp.singleRec.name, word: blacUtil.md5String(lp.singleRec.name + lp.singleRec.word) };
+    blacAccess.setUserCont(lAdd).then(   // here we go . not finished
       function(data){
         if (data.rtnCode == 1){
-          if (lp.singleRecord.state == blacAccess.dataState.new) {
-            lp.contentList.unshift(lp.singleRecord);
-            lp.singleRecord.state = blacAccess.dataState.clean;
-          }
-          else{
-            for (i=0;i<lp.contentList.length;i++){
-              if (lp.singleRecord.id ==lp.contentList[i].id ) {
-                lp.contentList[i] = lp.singleRecord;
-                break;
-              }
-            }
-          }
-          lp.closeArticle();
+          lp.contentList.unshift(lp.singleRec);
+          blacAccess.dataState.setDataState(lp.singleRec, blacAccess.dataState.clean );
         }
       }
     )
+    lp.closeRec();
   };
-  lp.deleteArticle = function(){
-    if (lp.singleRecord.state == "new") { // 直接删掉
-      lp.singleRecord = {};
-    }
-    else {
-      blacAccess.deleteArticleCont(lp.singleRecord.id).then(
-        function(data){
-          if (data.rtnCode == 1){
-            for (i=0;i<lp.contentList.length;i++){
-              if (lp.singleRecord.id ==lp.contentList[i].id ) {
+  lp.deleteRec = function(aName) {
+    for (var i = 0; i < lp.contentList.length; i++)
+      if (lp.contentList[i].name == aName) {
+        if (blacAccess.getDataState(lp.contentList[i]) == blacAccess.dataState.new) { // 直接删掉
+          lp.contentList.splice(i, 1);
+        }
+        else {
+          blacAccess.deleteUserCont(aName).then(
+            function (data) {
+              if (data.rtnCode == 1) {
                 lp.contentList.splice(i, 1);
-                break;
               }
             }
-          }
+          );
         }
-      );
-    }
+      }
   };
-
+  lp.closeRec = function(){
+    $('#userModal').modal('toggle');
+  };
   // 默认显示第一页。
   lp.psGetContent(1);
 

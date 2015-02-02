@@ -4,7 +4,7 @@
   <h4 class="sub-header">
     用户管理
     <span style="font-size: 0.5em;">
-      <button ng-click="editUser(-1)" type="button" class="btn btn-info btn-xs">增加</button>
+      <button ng-click="addRecord()" type="button" class="btn btn-info btn-xs">增加</button>
     </span>
   </h4>
 
@@ -21,7 +21,7 @@
         <tr  ng-repeat='ctListItem in contentList' >
           <td>{{$index + 1}}</td>
           <td><a href="" > {{ctListItem.name}} </a></td>
-          <td> <button ng-click="deleteUser(ctListItem.name)" type="button" class="btn btn-info btn-xs">删</button></td>
+          <td> <button ng-click="deleteRec(ctListItem.name)" type="button" class="btn btn-info btn-xs">删</button></td>
         </tr>
       </tbody>
     </table>
@@ -38,3 +38,30 @@
   </nav>
 
 </div>
+
+
+<div class="modal fade" id="userModal" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">新建用户</h4>
+      </div>
+      <div class="modal-body">
+
+        <form style="text-align: center;" role="form">
+          <div style="display: inline-block;min-width: 250px;">
+            <input ng-model="singleRec.name" class="form-control" type="text" name="txtUser"
+                   class="form-control"  placeholder="用户名" required >
+            <input ng-model="singleRec.word" class="form-control" id="txtWord" name="txtWord" type="text"
+                   placeholder="密码" required />
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button ng-click="saveRecord()"  type="button" class="btn btn-primary">保存</button>
+        <button ng-click="closeRec()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

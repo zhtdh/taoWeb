@@ -229,12 +229,18 @@ angular.module('blac-util', ['angular-md5'])
       getArticleCont:function(aArtId){return httpQ(lpUrl,{func:'getArticleCont',ex_parm:{articleId:aArtId} })},
       setArticleCont:function(aArtObj){return httpQ(lpUrl,{func:'setArticleCont',ex_parm:{article:aArtObj} })},
       deleteArticleCont:function(aArtId){return httpQ(lpUrl,{func:'deleteArticleCont',ex_parm:{articleId:aArtId} })},
-      getUserList:function(aLoc){return httpQ(lpUrl,{func:'getUserList',ex_parm:{location:aLoc} })},
+
+
+      getUserList:function(aLoc){return httpQ(lpUrl,{func:'getUserList',ex_parm:{ location:aLoc } })},
+      setUserCont:function(aUser){return httpQ(lpUrl,{func:'setUserList',ex_parm:{ user:aUser} })},
+
+      deleteUserCont:function(aName){return httpQ(lpUrl,{func:'deleteUserCont',ex_parm:{name :aName }} ) },
 
 
       checkRtn: checkRtn,
       dataState : dataState,
-      setDataState: function(aArray, aState) { for (var i=0;i<aArray.length;i++) aArray[i]._exState = aState },
+      setDataState:function(aObj,aState){if($.isArray(aObj)) for (var i=0;i<aObj.length;i++) aObj[i]._exState=aState else aObj._exState=aState},
+      getDataState:function(aObj) {return aObj._exState },
       gEvent:gEvent
     } ;
 
