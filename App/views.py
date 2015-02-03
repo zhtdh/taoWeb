@@ -422,7 +422,10 @@ def resetPw(p_dict,p_rtn):
     try:
         user = User.objects.get(username=p_dict['username'])
         if user.pw != p_dict['old']:
-            raise AppException('密码错误')
+            p_rtn.update({
+            "rtnInfo":"密码错误",
+            "rtnCode":-1
+        })
         else:
             user.pw = p_dict['new']
             user.save(update_fields=['pw'])
