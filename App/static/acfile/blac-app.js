@@ -82,7 +82,7 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
 
   // 后台管理端：栏目设置。
   {
-    lp.treeData = [{"id":0,"title":"根","items":[]}];
+    lp.treeData = [{"id":0,"title":"根","items":[], deleteId:[]}];
     lp.treeState = blacAccess.dataState;
     lp.wrapConfirm = blacUtil.wrapConfirm;
 
