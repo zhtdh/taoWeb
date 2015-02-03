@@ -2,6 +2,7 @@
 from django.db import connection,transaction
 from django.shortcuts import render,HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
@@ -324,27 +325,33 @@ def setUser(p_dict,p_rtn,session):
     if p_set != p_checkset:
         raise AppException('上传参数错误')
     if session['username'] == 'Admin':
-        if p_dict['_exState'] == 'new':
-            new_u = User(username=p_dict['username'],pw=p_dict['pw'])
-            new_u.save()
-        elif p_dict['_exState'] == 'dirty':
-            old_u = User.objects.get(username=p_dict['username'])
-            if old_u.pw == p_dict['oldword']:
-                old_u.pw = p_dict['pw']
-                old_u.save(update_fields=['pw'])
+        try:
+            if p_dict['_exState'] == 'new':
+                new_u = User(username=p_dict['username'],pw=p_dict['pw'])
+                new_u.save(force_insert=True)
+            elif p_dict['_exState'] == 'dirty':
+                old_u = User.objects.get(username=p_dict['username'])
+                if old_u.pw == p_dict['oldword']:
+                    old_u.pw = p_dict['pw']
+                    old_u.save(force_update=True,update_fields=['pw'])
+                else:
+                    p_rtn.update({
+                        "rtnInfo": "失败，旧密码错误",
+                        "rtnCode": -1
+                    })
+            elif p_dict['_exState'] == 'clean':
+                pass
             else:
-                p_rtn.update({
-                    "rtnInfo": "失败，旧密码错误",
-                    "rtnCode": -1
-                })
-        elif p_dict['_exState'] == 'clean':
-            pass
-        else:
-            raise AppException('上传参数错误')
-        p_rtn.update({
-            "rtnInfo": "成功",
-            "rtnCode": 1
-        })
+                raise AppException('上传参数错误')
+            p_rtn.update({
+                "rtnInfo": "成功",
+                "rtnCode": 1
+            })
+        except IntegrityError:
+            p_rtn.update({
+                "rtnInfo": "用户名重复，增加失败！",
+                "rtnCode": -1
+            })
     else:
         p_rtn.update({
             "rtnInfo": "非管理员不能维护用户",
@@ -382,7 +389,7 @@ def getUserList(p_dict,p_rtn):
         raise AppException('上传参数错误')
     firstRow = (p_dict['pageCurrent'] - 1) * p_dict['pageRows']
     lastRow = firstRow + p_dict['pageRows']
-    users = list(User.objects.all().order_by('username').values('username')[firstRow:lastRow])
+    users = list(User.objects.exclude(username__exact='Admin').order_by('username').values('username')[firstRow:lastRow])
     if p_dict['pageTotal'] == 0:
         total = User.objects.all().count()
     else:
