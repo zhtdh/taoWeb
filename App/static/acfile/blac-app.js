@@ -27,7 +27,9 @@ app.config(function($stateProvider, $urlRouterProvider) {
       controller:function($scope, blacStore, blacAccess){
         $scope.saveWord = function(){
           if ($scope.newword == $scope.confirmword && $scope.newword != $scope.oldword)  {
-            blacAccess.userChange(blacStore.localUser(), $scope.oldword, $scope.newword );
+            blacAccess.userChange(blacStore.localUser(), $scope.oldword, $scope.newword).then(
+              function(data){ if (data.rtnCode ==1) window.alert("更改成功"); else window.alert("保存失败"); }
+            );
           }
         }
       }

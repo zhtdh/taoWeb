@@ -24,8 +24,9 @@
         <input ng-model="confirmword" type="password" class="form-control" id="confirmword" placeholder="确认密码：">
       </div>
     </div>
+    <p> &nbsp;
     <span ng-show="confirmword != newword" class="label label-danger" >  两次密码不一致。  </span>
-
+    </p>
     <button type="button" ng-click="saveWord()" class="btn btn-primary">保存</button>
 
 
