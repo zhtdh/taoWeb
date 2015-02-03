@@ -2,7 +2,7 @@
 from django.db import connection,transaction
 from django.shortcuts import render,HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError,DatabaseError
 from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
@@ -350,6 +350,11 @@ def setUser(p_dict,p_rtn,session):
         except IntegrityError:
             p_rtn.update({
                 "rtnInfo": "用户名重复，增加失败！",
+                "rtnCode": -1
+            })
+        except DatabaseError:
+            p_rtn.update({
+                "rtnInfo": "用户不存在，修改失败！",
                 "rtnCode": -1
             })
     else:
