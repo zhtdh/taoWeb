@@ -318,7 +318,7 @@ def setUser(p_dict,p_rtn,session):
     :param p_rtn:
     :return:
     '''
-    p_dict = p_dict['user']
+#    p_dict = p_dict['user']
     p_set = set(p_dict.keys())
     p_checkset = set(['_exState','name','word'])
     if p_set != p_checkset:
