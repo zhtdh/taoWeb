@@ -82,7 +82,7 @@ app.controller("ctrlAdminLeft", function($scope,blacUtil,blacAccess,$location,$h
 
   // 后台管理端：栏目设置。
   {
-    lp.treeData = [{"id":0,"title":"根","items":[]}];
+    lp.treeData = [{"id":0,"title":"根","items":[], deleteId:[]}];
     lp.treeState = blacAccess.dataState;
     lp.wrapConfirm = blacUtil.wrapConfirm;
 
@@ -181,7 +181,7 @@ app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,blacPage,
   lp.psGetContent = function (aOffset) {
     blacPage.psGetContent(blacAccess.getArticleList,[lp.psContentInfo, lColumnId], aOffset
       ,function(aErr, aRtn){
-        lp.contentList = aRtn.content;
+        lp.contentList = aRtn.exObj.content;
         lp.psContentInfo = aRtn.psInfo;
         lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
         lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
@@ -272,11 +272,11 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,blacUtil
   lp.psGetContent = function (aOffset) {
     blacPage.psGetContent(blacAccess.getUserList,[lp.psContentInfo], aOffset
       ,function(aErr, aRtn){
-        lp.contentList = aRtn.content;
+        lp.contentList = aRtn.exObj.userList;
         lp.psContentInfo = aRtn.psInfo;
         lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
         lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
-        if (lp.contentList) blacAccess.setDataState(lp.contentList, blacAccess.dataState.clean);
+        if (lp.contentList) blacAccess.setDataState(lp.contentList, blacAccess.dataState.clean); else lp.contentList = [];
       });
   };
   lp.singleRec = {name:"newUser", word: ""};
@@ -294,7 +294,7 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,blacUtil
       function(data){
         if (data.rtnCode == 1){
           lp.contentList.unshift(lp.singleRec);
-          blacAccess.dataState.setDataState(lp.singleRec, blacAccess.dataState.clean );
+          blacAccess.setDataState(lp.singleRec, blacAccess.dataState.clean );
           lp.closeRec();
         }
       }
