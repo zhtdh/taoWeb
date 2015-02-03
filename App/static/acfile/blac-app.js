@@ -60,13 +60,13 @@ app.controller("ctrlAdminTop",function($scope,blacStore,blacAccess) {
 app.controller("ctrlLogin",function($rootScope,$scope,$location,blacStore,blacAccess) {
   var lp = $scope;
   lp.rtnInfo = "";
-  lp.lUser = {rem:blacStore.localRem(), name:blacStore.localUser(), word:blacStore.localWord()  };
+  lp.lUser = {rem:blacStore.localRem(), username:blacStore.localUser(), pw:blacStore.localWord()  };
 
   lp.userLogin = function () {
     blacAccess.userLoginQ(lp.lUser).then( function(data) {
       if (data.rtnCode > 0) {
-        blacStore.localUser(lp.lUser.name);
-        blacStore.localWord(lp.lUser.word);
+        blacStore.localUser(lp.lUser.username);
+        blacStore.localWord(lp.lUser.pw);
         blacStore.localRem(lp.lUser.rem);
         $rootScope.$broadcast(blacAccess.gEvent.login);
         $location.path('/acadmin/cover');
@@ -181,7 +181,7 @@ app.controller("ctrlAdminListArt", function($scope,blacUtil,blacAccess,blacPage,
   lp.psGetContent = function (aOffset) {
     blacPage.psGetContent(blacAccess.getArticleList,[lp.psContentInfo, lColumnId], aOffset
       ,function(aErr, aRtn){
-        lp.contentList = aRtn.exObj.content;
+        lp.contentList = aRtn.exObj.contentList;
         lp.psContentInfo = aRtn.psInfo;
         lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
         lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
@@ -279,15 +279,15 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,blacUtil
         if (lp.contentList) blacAccess.setDataState(lp.contentList, blacAccess.dataState.clean); else lp.contentList = [];
       });
   };
-  lp.singleRec = {name:"newUser", word: ""};
+  lp.singleRec = {username:"newUser", pw: ""};
 
   lp.addRecord = function(){
-    lp.singleRec = {name:"newUser", word:""};
+    lp.singleRec = {username:"newUser", pw:""};
     $('#userModal').modal( { backdrop: "static" } );
   };
 
   lp.saveRecord = function(){
-    var lAdd = { name:lp.singleRec.name, word: blacUtil.md5String(lp.singleRec.name + lp.singleRec.word) };
+    var lAdd = { username:lp.singleRec.username, pw: blacUtil.md5String(lp.singleRec.username + lp.singleRec.pw) };
     blacAccess.setDataState(lAdd, blacAccess.dataState.new);
     console.log(lAdd);
     blacAccess.setUserCont(lAdd).then(   // here we go . not finished
@@ -302,8 +302,9 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,blacUtil
 
   };
   lp.deleteRec = function(aName) {
+    console.log('del',aName);
     for (var i = 0; i < lp.contentList.length; i++)
-      if (lp.contentList[i].name == aName) {
+      if (lp.contentList[i].username == aName) {
         if (blacAccess.getDataState(lp.contentList[i]) == blacAccess.dataState.new) { // 直接删掉
           lp.contentList.splice(i, 1);
         }
@@ -316,6 +317,7 @@ app.controller("ctrlAdminListUser", function($scope,blacAccess,blacPage,blacUtil
             }
           );
         }
+        break;
       }
   };
   lp.closeRec = function(){

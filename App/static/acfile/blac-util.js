@@ -202,10 +202,10 @@ angular.module('blac-util', ['angular-md5'])
     };
     var userLoginQ = function(aObjUser) {
       var lObjUser = angular.copy(aObjUser);
-      lObjUser.md5 = md5.createHash(lObjUser.name + lObjUser.word);
-      delete(lObjUser.word);
+      lObjUser.md5 = md5.createHash(lObjUser.username + lObjUser.pw);
+      delete(lObjUser.pw);
       delete(lObjUser.rem);
-      return httpQ(lpUrl, { func: 'userlogin', ex_parm:{ user: lObjUser } } ); // user: {name:xx,word:xx}
+      return httpQ(lpUrl, { func: 'userlogin', ex_parm:{ user: lObjUser } } );
     };
     var checkRtn = function (aRtn) {
       if (aRtn.rtnCode == 0)       // 当返回0的时候表示有后续的附加操作。进一步判断appendOper
@@ -222,7 +222,7 @@ angular.module('blac-util', ['angular-md5'])
     return {   // xxx().then(function(data){}, function(err){})
       userLoginQ: userLoginQ,
       userChange:function(aUser,aOld,aNew){return httpQ( lpUrl,{func:'userChange',
-        ex_parm:{user:aUser,old:md5.createHash(aUser+aOld), new: md5.createHash(aUser+aNew)}})},
+        ex_parm:{username:aUser,old:md5.createHash(aUser+aOld), new: md5.createHash(aUser+aNew)}})},
       getAdminColumn:function(){return httpQ(lpUrl,{func:'getAdminColumn',ex_parm:{} })},
       setAdminColumn:function(aArgs){return httpQ(lpUrl,{func:'setAdminColumn',ex_parm:{columnTree: aArgs } })},
       getArticleList:function(aLoc,aColId){return httpQ(lpUrl,{func:'getArticleList',ex_parm:{columnId:aColId,location:aLoc} })},
@@ -234,7 +234,7 @@ angular.module('blac-util', ['angular-md5'])
       getUserList:function(aLoc){return httpQ(lpUrl,{func:'getUserList',ex_parm:{ location:aLoc } })},
       setUserCont:function(aUser){return httpQ(lpUrl,{func:'setUserCont',ex_parm:{ user:aUser} })},
 
-      deleteUserCont:function(aName){return httpQ(lpUrl,{func:'deleteUserCont',ex_parm:{name :aName }} ) },
+      deleteUserCont:function(aName){return httpQ(lpUrl,{func:'deleteUserCont',ex_parm:{username :aName }} ) },
 
 
       checkRtn: checkRtn,
