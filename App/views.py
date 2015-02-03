@@ -24,11 +24,11 @@ def logon(session,p_user,p_rtn):
 
     :param session:
     :param p_user: { md5: "6547436690a26a399603a7096e876a2d"
-                                           name: "aaa" }
+                                           username: "aaa" }
     :param p_rtn:
     :return:
     '''
-    ls_name = p_user['name']
+    ls_name = p_user['username']
     ls_pw = p_user['md5']
     try:
         user = User.objects.get(username=ls_name)
@@ -314,23 +314,23 @@ def deleteArticle(p_dict,p_rtn,session):
 def setUser(p_dict,p_rtn,session):
     '''
     维护User
-    :param p_dict: { state:"new", name: xxx , word : xxx, oldWord: xxx}
+    :param p_dict: { state:"new", username: xxx , pw : xxx, oldWord: xxx}
     :param p_rtn:
     :return:
     '''
 #    p_dict = p_dict['user']
     p_set = set(p_dict.keys())
-    p_checkset = set(['_exState','name','word'])
+    p_checkset = set(['_exState','username','pw'])
     if p_set != p_checkset:
         raise AppException('上传参数错误')
     if session['username'] == 'Admin':
         if p_dict['_exState'] == 'new':
-            new_u = User(username=p_dict['name'],pw=p_dict['word'])
+            new_u = User(username=p_dict['username'],pw=p_dict['pw'])
             new_u.save()
         elif p_dict['_exState'] == 'dirty':
-            old_u = User.objects.get(username=p_dict['name'])
+            old_u = User.objects.get(username=p_dict['username'])
             if old_u.pw == p_dict['oldword']:
-                old_u.pw = p_dict['word']
+                old_u.pw = p_dict['pw']
                 old_u.save(update_fields=['pw'])
             else:
                 p_rtn.update({
@@ -353,15 +353,15 @@ def setUser(p_dict,p_rtn,session):
 def deleteUser(p_dict,p_rtn,session):
     '''
     删除user
-    :param p_dict: { name: xxx }
+    :param p_dict: { username: xxx }
     :param p_rtn:
     :param session:
     :return:
     '''
-    if 'name' not in p_dict:
+    if 'username' not in p_dict:
         raise AppException('上传参数错误')
     if session['username'] == 'Admin':
-        User.objects.filter(username=p_dict['name']).delete()
+        User.objects.filter(username=p_dict['username']).delete()
         p_rtn.update({
             "rtnInfo": "成功",
             "rtnCode": 1
@@ -400,7 +400,7 @@ def getUserList(p_dict,p_rtn):
 def resetPw(p_dict,p_rtn):
     '''
     修改用户密码
-    :param p_dict:{ "user":"Admin",
+    :param p_dict:{ "username":"Admin",
                     "old":"89dc2302d644609526f8bee192df43e3",
                     "new":"0977648895559d3a4420c397bc6cf98d"
                   }
@@ -408,7 +408,7 @@ def resetPw(p_dict,p_rtn):
     :return:
     '''
     try:
-        user = User.objects.get(username=p_dict['user'])
+        user = User.objects.get(username=p_dict['username'])
         if user.pw != p_dict['old']:
             raise AppException('密码错误')
         else:
