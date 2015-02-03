@@ -153,7 +153,7 @@ angular.module('blac-util', ['angular-md5'])
           function (data){
             if (data.rtnCode == 1) {
               if (data.exObj.rowCount>0) psInfo.pageTotal = Math.floor(data.exObj.rowCount / psInfo.pageRows ) + 1;
-              aCallBack(null, { content:data.exObj.contentList,
+              aCallBack(null, { exObj:data.exObj,
                                  psInfo: psInfo });
             }
             else aCallBack(data.rtnInfo, null);
