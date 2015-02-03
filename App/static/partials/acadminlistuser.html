@@ -20,8 +20,8 @@
       <tbody>
         <tr  ng-repeat='ctListItem in contentList' >
           <td>{{$index + 1}}</td>
-          <td><a href="" > {{ctListItem.name}} </a></td>
-          <td> <button ng-click="deleteRec(ctListItem.name)" type="button" class="btn btn-info btn-xs">删</button></td>
+          <td><a href="" > {{ctListItem.username}} </a></td>
+          <td> <button ng-click="deleteRec(ctListItem.username)" type="button" class="btn btn-info btn-xs">删</button></td>
         </tr>
       </tbody>
     </table>
@@ -50,9 +50,9 @@
 
         <form style="text-align: center;" role="form">
           <div style="display: inline-block;min-width: 250px;">
-            <input ng-model="singleRec.name" class="form-control" type="text" name="txtUser"
+            <input ng-model="singleRec.username" class="form-control" type="text" name="txtUser"
                    class="form-control"  placeholder="用户名" required >
-            <input ng-model="singleRec.word" class="form-control" id="txtWord" name="txtWord" type="text"
+            <input ng-model="singleRec.pw" class="form-control" id="txtWord" name="txtWord" type="text"
                    placeholder="密码" required />
           </div>
         </form>

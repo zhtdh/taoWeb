@@ -2,6 +2,7 @@
 ====================================================================
 表column: id, parentid, kind, title, link.
 表article: id, parentid, kind, title, content, imglink, videolink, recname, rectime.
+表user:    username, word.
 =====================================================================
 
 
