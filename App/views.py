@@ -454,7 +454,7 @@ def getArticleTypesByKind(p_dict,p_rtn):
     pattern = '('
     for p in p_dict['kind']:
         pattern = pattern + p + '|'
-    pattern = pattern[0:-1] + ')'
+    pattern = len(pattern) == 1 and '()' or pattern[0:-1] + ')'
     if len(p_dict['parentId']) > 0:
         r = ArticleType.objects.filter(parent_id=p_dict['parentId'])
     else:
@@ -493,7 +493,7 @@ def getArticlesByKind(p_dict,p_rtn):
     pattern = '('
     for p in p_dict['kind']:
         pattern = pattern + p + '|'
-    pattern = pattern[0:-1] + ')'
+    pattern = len(pattern) == 1 and '()' or pattern[0:-1] + ')'
     if len(p_dict['parentId']) > 0:
         r = Article.objects.filter(parent_id=p_dict['parentId'])
     else:
