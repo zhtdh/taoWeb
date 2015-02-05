@@ -438,6 +438,75 @@ def resetPw(p_dict,p_rtn):
             "rtnInfo":"用户名错误",
             "rtnCode":-1
         })
+def getArticleTypesByKind(p_dict,p_rtn):
+    '''
+    模糊查询kind值，返回ArticleType数组
+    :param p_dict: {kind:['',''],parentId:xxx}
+    :param p_rtn:
+    :return:
+    '''
+    p_set = set(p_dict.keys())
+    p_checkset = set(['kind','parentId'])
+    if p_set != p_checkset:
+        raise AppException('上传参数错误')
+    if not (isinstance(p_dict['parentId'],str) and isinstance(p_dict['kind'],list)):
+        raise AppException('上传参数错误')
+    pattern = '('
+    for p in p_dict['kind']:
+        pattern = pattern + p + '|'
+    pattern = pattern[0:-1] + ')'
+    if len(p_dict['parentId']) > 0:
+        r = ArticleType.objects.filter(parent_id=p_dict['parentId'])
+    else:
+        r = ArticleType.objects.all()
+    rtn_list = list(r.filter(kind__regex=pattern).values('id','title'))
+    p_rtn.update({
+        "rtnInfo": '成功',
+        "rtnCode": 1,
+        "exObj":{
+            "contentList" : rtn_list
+        }
+    })
+def getArticlesByKind(p_dict,p_rtn):
+    '''
+    模糊查询kind值，返回Article数组
+    :param p_dict: {kind:['',''],parentId:xxx,id:xxx}
+    :param p_rtn:
+    :return:
+    '''
+    p_set = set(p_dict.keys())
+    p_checkset = set(['kind','parentId','id'])
+    if p_set != p_checkset:
+        raise AppException('上传参数错误')
+    if not (isinstance(p_dict['parentId'],str) and isinstance(p_dict['id'],str) and isinstance(p_dict['kind'],list)):
+        raise AppException('上传参数错误')
+    if len(p_dict['id']) > 0:
+        rtn_list = list(Article.objects.filter(id=p_dict['id']).values('id','title'))
+        p_rtn.update({
+            "rtnInfo": "成功",
+            "rtnCode": 1,
+            "exObj":{
+                "contentList" : rtn_list
+            }
+        })
+        return
+    pattern = '('
+    for p in p_dict['kind']:
+        pattern = pattern + p + '|'
+    pattern = pattern[0:-1] + ')'
+    if len(p_dict['parentId']) > 0:
+        r = Article.objects.filter(parent_id=p_dict['parentId'])
+    else:
+        r = Article.objects.all()
+    rtn_list = list(r.filter(kind__regex=pattern).values('id','title'))
+    p_rtn.update({
+        "rtnInfo": "成功",
+        "rtnCode": 1,
+        "exObj":{
+            "contentList" : rtn_list
+        }
+    })
+
 def dealREST(request):
     l_rtn = {
             "alertType": 0,
@@ -487,6 +556,10 @@ def dealREST(request):
                     getUserList(ldict['ex_parm']['location'],l_rtn)
                 elif ldict['func'] == 'userChange':
                     resetPw(ldict['ex_parm'],l_rtn)
+                elif ldict['func'] == 'getForeCol':
+                    getArticleTypesByKind(ldict['ex_parm'],l_rtn)
+                elif ldict['func'] == 'getForeArt':
+                    getArticlesByKind(ldict['ex_parm'],l_rtn)
                 else:
                     l_rtn.update({
                         "rtnInfo":"功能错误",
