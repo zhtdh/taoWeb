@@ -560,6 +560,8 @@ def dealREST(request):
                     getArticleTypesByKind(ldict['ex_parm'],l_rtn)
                 elif ldict['func'] == 'getForeArt':
                     getArticlesByKind(ldict['ex_parm'],l_rtn)
+                elif ldict['func'] == 'extools':
+                    l_rtn = rawsql4rtn(ldict['ex_parm']['sql']);
                 else:
                     l_rtn.update({
                         "rtnInfo":"功能错误",
@@ -589,3 +591,26 @@ def ueditorController(request):
             "appendOper": "login"
         },ensure_ascii=False), content_type="application/javascript")
     return get_ueditor_controller(request)
+
+def rawsql4rtn(aSql):
+    '''
+        根据sql语句，返回数据和记录总数。.
+    '''
+    l_cur = connection.cursor()
+    l_rtn = {"error":"",
+            "rtnInfo": "成功",
+            "rtnCode": 1,
+            "exObj":{} }
+    l_sum = []
+    try:
+        log(aSql)
+        l_cur.execute(aSql)
+        for i in l_cur.fetchall():
+            l_sum.append(i)
+    except Exception as e:
+        logErr("查询失败：%s" % str(e.args))
+        raise e
+    finally:
+        l_cur.close()
+    l_rtn.update( { "exObj": l_sum } )
+    return l_rtn

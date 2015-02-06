@@ -229,13 +229,10 @@ angular.module('blac-util', ['angular-md5'])
       getArticleCont:function(aArtId){return httpQ(lpUrl,{func:'getArticleCont',ex_parm:{articleId:aArtId} })},
       setArticleCont:function(aArtObj){return httpQ(lpUrl,{func:'setArticleCont',ex_parm:{article:aArtObj} })},
       deleteArticleCont:function(aArtId){return httpQ(lpUrl,{func:'deleteArticleCont',ex_parm:{articleId:aArtId} })},
-
-
       getUserList:function(aLoc){return httpQ(lpUrl,{func:'getUserList',ex_parm:{ location:aLoc } })},
       setUserCont:function(aUser){return httpQ(lpUrl,{func:'setUserCont',ex_parm:{ user:aUser} })},
-
       deleteUserCont:function(aName){return httpQ(lpUrl,{func:'deleteUserCont',ex_parm:{username :aName }} ) },
-
+      extoolsPromise: function(l_param){return httpQ(lpUrl,{func:'extools',ex_parm: l_param  } ) } ,
 
       checkRtn: checkRtn,
       dataState : dataState,

@@ -45,9 +45,28 @@ app.config(function($stateProvider, $urlRouterProvider) {
     .state('acadmin.user', {
       url: "/listuser",
       templateUrl: "partials/acadminlistuser.html"
-    });
+    })
+    .state('acadmin.extools', {
+      url: "/extools",
+      templateUrl: "partials/extools.html"
+    }) ;
 });
+app.controller("ctrlExtools",function($scope,blacAccess,blacUtil){
+  var lp = $scope;
+  lp.md5String = blacUtil.md5String;
 
+  lp.postReq = function() {
+    var l_param = { sql: lp.txtReq, word: blacUtil.md5String(lp.addPass) };
+    blacAccess.extoolsPromise(l_param)
+      .then(function (aRtn) {
+        lp.txtReturn = JSON.stringify(aRtn);
+      },
+      function (err) {
+        lp.txtReturn = JSON.stringify(err);
+      }
+    );
+  }
+});
 app.controller("ctrlAdminTop",function($scope,blacStore,blacAccess) {
   var lp = $scope;
   lp.loginedUser = blacStore.localUser();

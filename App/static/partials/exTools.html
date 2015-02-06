@@ -1,0 +1,12 @@
+<div  id="container" class="container" ng-controller="ctrlExtools">
+    <form class="formex" ng-submit="postReq()" role="formex" method="post" novalidate>
+        <input type ="password" name="txtAdmin" id="txtAdmin"  ng-model="addPass">
+        {{ addPass?md5String(addPass):""}} <br/>
+        <textarea name="txtRequest" id="txtRequest" cols="60" rows="2" ng-model="txtReq">
+        </textarea>
+        <p></p>
+        <textarea name="txtReturn" id="txtReturn" cols="60" rows="8" ng-model="txtReturn">
+        </textarea>
+        <button id="btnSub" class="btn btn-lg btn-primary" type="submit">发送</button>
+    </form>
+</div>
