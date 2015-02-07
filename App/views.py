@@ -470,18 +470,28 @@ def getArticleTypesByKind(p_dict,p_rtn):
 def getArticlesByKind(p_dict,p_rtn):
     '''
     模糊查询kind值，返回Article数组
-    :param p_dict: {kind:['',''],parentId:xxx,id:xxx}
+    :param p_dict: {kind:['',''],parentId:xxx,id:xxx,location: { pageCurrent:当前页, pageRows:一页的行数}
+                    }
     :param p_rtn:
     :return:
     '''
     p_set = set(p_dict.keys())
-    p_checkset = set(['kind','parentId','id'])
+    p_checkset = set(['kind','parentId','id','location'])
     if p_set != p_checkset:
         raise AppException('上传参数错误')
-    if not (isinstance(p_dict['parentId'],str) and isinstance(p_dict['id'],str) and isinstance(p_dict['kind'],list)):
+    if not (isinstance(p_dict['parentId'],str) and\
+                    isinstance(p_dict['id'],str) and\
+                    isinstance(p_dict['kind'],list) and\
+                    isinstance(p_dict['location'],dict)):
         raise AppException('上传参数错误')
+    if not (isinstance(p_dict['location']['pageCurrent'],int) and\
+                    isinstance(p_dict['location']['pageRows'],int)):
+        raise AppException('上传参数错误')
+    firstRow = (p_dict['location']['pageCurrent'] - 1) * p_dict['location']['pageRows']
+    lastRow = firstRow + p_dict['location']['pageRows']
+
     if len(p_dict['id']) > 0:
-        rtn_list = list(Article.objects.filter(id=p_dict['id']).values('id','title'))
+        rtn_list = list(Article.objects.filter(id=p_dict['id']).values('id','title')[firstRow:lastRow])
         p_rtn.update({
             "rtnInfo": "成功",
             "rtnCode": 1,
@@ -498,7 +508,7 @@ def getArticlesByKind(p_dict,p_rtn):
         r = Article.objects.filter(parent_id=p_dict['parentId'])
     else:
         r = Article.objects.all()
-    rtn_list = list(r.filter(kind__regex=pattern).values('id','title'))
+    rtn_list = list(r.filter(kind__regex=pattern).values('id','title')[firstRow:lastRow])
     p_rtn.update({
         "rtnInfo": "成功",
         "rtnCode": 1,
