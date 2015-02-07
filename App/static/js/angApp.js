@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2015/1/15.
  */
-var myApp = angular.module('blacapp', ['ui.router']);
+var myApp = angular.module('blacapp', ['ui.router', 'blac-util']);
 
 myApp.config(function($stateProvider, $urlRouterProvider) {
   //
@@ -72,4 +72,46 @@ myApp.config(function($stateProvider, $urlRouterProvider) {
         $scope.things = ["last", "last", "last", "Tlastgs5"];
       }
     })
+});
+
+
+myApp.controller("angIndex", function($scope, blacAccess, blacPage){
+  var lp = $scope;
+  console.log("ffffeeeeeeeef");
+  function getForeCol( aKind , aParentId ) {
+    var l_param = { kind: aKind , parentId: aParentId};
+    console.log("akind " , aKind);
+    //if (aParentId.length > 1) l_param.parentId = aParentId;
+    blacAccess.getForeCol(l_param)
+      .then(function (aRtn) {
+        console.log(JSON.stringify(aRtn) );
+      },
+      function (err) {
+        console.log(JSON.stringify(err));
+      }
+    );
+  };
+
+  lp.psContentInfo = { pageCurrent: 1, pageRows: 10, pageTotal: 0  }; // init;
+  lp.contentList = []; // article list
+  function psGetContent(aOffset, aParentKind, aKind, aParentId, aId, aHasContent ) {
+    if (!aId) aId = "";
+    if (!aParentId) aParentId = "";
+    if (!aParentKind) aParentKind = [];
+    if (!aHasContent) aHasContent = 1;
+
+    blacPage.psGetContent(blacAccess.getForeArt,[lp.psContentInfo, aParentKind, aKind , aParentId, aId], aOffset
+      ,function(aErr, aRtn){
+        lp.contentList = aRtn.exObj.userList;
+        lp.psContentInfo = aRtn.psInfo;
+        lp.contentHasLast = (lp.psContentInfo.pageCurrent == lp.psContentInfo.pageTotal)?false:true;
+        lp.contentHasPrior = (lp.psContentInfo.pageCurrent == 1)?false:true;
+        if (lp.contentList) blacAccess.setDataState(lp.contentList, blacAccess.dataState.clean); else lp.contentList = [];
+      });
+  };
+
+
+  lp.getNav = function() { console.log("fffff");  getForeCol([',nav0,'], "") };
+  lp.getArt = function() { console.log("get art");
+    psGetContent(1, [], [], 'C67743685CF00001FFEB15602B167D') };
 });

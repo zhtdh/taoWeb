@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="blacapp" ng-controller="angIndex">
   <head>
     <meta charset="utf-8">
     <title>黑小巫的通用门户网站</title>
@@ -63,11 +63,15 @@
 
     <div ui-view class="max-width" style="margin-left: -15px;"></div>
 
-    <div class="row">
+    <div class="row" >
       <footer class="footer-main">
           <div class="col-xs-4 col-xs-offset-4" style="text-align: center;">
             <ul> 网站备案号xxxxxxxxxxxxx </ul>
             <ul> tel: 400-12345678 </ul>
+            <button type="button" ng-click="getNav()" class="btn btn-primary">gogogo</button>
+            <button type="button" ng-click="getArt()" class="btn btn-primary">here</button>
+
+
           </div>
       </footer>
     </div> <!-- row -->
@@ -80,8 +84,8 @@
 <script src="js/angular13.js"></script>
 <script src="js/angular-sanitize.js"></script>
 <script src="js/angular-ui-router.js"></script>
+<script src="js/angular-md5.js"></script>
+<script src="acfile/blac-util.js"></script>
 <script src="js/angApp.js"></script>
-
-
 
 

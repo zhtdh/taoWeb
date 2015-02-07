@@ -232,7 +232,10 @@ angular.module('blac-util', ['angular-md5'])
       getUserList:function(aLoc){return httpQ(lpUrl,{func:'getUserList',ex_parm:{ location:aLoc } })},
       setUserCont:function(aUser){return httpQ(lpUrl,{func:'setUserCont',ex_parm:{ user:aUser} })},
       deleteUserCont:function(aName){return httpQ(lpUrl,{func:'deleteUserCont',ex_parm:{username :aName }} ) },
-      extoolsPromise: function(l_param){return httpQ(lpUrl,{func:'extools',ex_parm: l_param  } ) } ,
+      extoolsPromise: function(l_param){return httpQ(lpUrl,{func:'extools',ex_parm:l_param  } ) } ,
+      getForeCol: function(l_param){return httpQ(lpUrl,{func:'getForeCol',ex_parm:l_param  } ) } ,
+      getForeArt: function(aLoc, aParentKind,aKind, aParentId, aId, aHasContent){return httpQ(lpUrl,{func:'getForeArt',
+        ex_parm:{location:aLoc,parentKind:aParentKind, kind:aKind,parentId:aParentId, id:aId, hasContent:aHasContent}  } ) } ,
 
       checkRtn: checkRtn,
       dataState : dataState,

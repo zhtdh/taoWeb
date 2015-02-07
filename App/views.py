@@ -477,16 +477,16 @@ def getArticlesByKind(p_dict,p_rtn):
     '''
     p_set = set(p_dict.keys())
     p_checkset = set(['kind','parentId','id','location'])
-    if p_set != p_checkset:
-        raise AppException('上传参数错误')
+    #if p_set != p_checkset:
+    #    raise AppException('上传参数错误1')
     if not (isinstance(p_dict['parentId'],str) and\
                     isinstance(p_dict['id'],str) and\
                     isinstance(p_dict['kind'],list) and\
                     isinstance(p_dict['location'],dict)):
-        raise AppException('上传参数错误')
+        raise AppException('上传参数错误2')
     if not (isinstance(p_dict['location']['pageCurrent'],int) and\
                     isinstance(p_dict['location']['pageRows'],int)):
-        raise AppException('上传参数错误')
+        raise AppException('上传参数错误3')
     firstRow = (p_dict['location']['pageCurrent'] - 1) * p_dict['location']['pageRows']
     lastRow = firstRow + p_dict['location']['pageRows']
 
