@@ -31,30 +31,15 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="nav-item"><a ui-sref="top">首 页</a></li>
-            <li class="nav-item"><a ui-sref="sec">公 司</a></li>
-            <li class="nav-item"><a ui-sref="thi">应 用</a></li>
-            <li class="dropdown nav-item">
-              <a ui-sref="fou" class="dropdown-toggle" data-toggle="dropdown">案 例 <span class="caret"></span></a>
-              <ul class="dropdown-menu nav-menu-color" role="menu">
-                <li><a ui-sref="sec.list">案例1</a></li>
-                <li><a ui-sref="top.list">案例2</a></li>
-                <li><a href="#">案例3</a></li>
-                <li><a href="#">案例4</a></li>
-                <li><a href="#">案例5</a></li>
-              </ul>
+
+            <li class="dropdown nav-item" ng-repeat="ngNav in ngNavList">
+              <a ui-sref="ngNav.link" class="dropdown-toggle" data-toggle="dropdown"> {{ ngNav.title }} </a>
+                <ul ng-show="ngNav.submenu" class="dropdown-menu nav-menu-color" role="menu">
+                  <li ng-repeat="ngNav2 in ngNav.submenu">
+                    <a href="#"> {{ ngNav2.title }}</a>
+                  </li>
+                </ul>
             </li>
-            <li class="dropdown nav-item">
-              <a ui-sref="fiv" class="dropdown-toggle" data-toggle="dropdown">行 业 <span class="caret"></span></a>
-              <ul class="dropdown-menu nav-menu-color" role="menu">
-                <li> <a href="#"> <i class="fa fa-check" ></i> &nbsp;行业1</a></li>
-                <li><a href="#">行业2</a></li>
-                <li><a href="#">行业3</a></li>
-                <li><a href="#">行业4</a></li>
-                <li><a href="#">行业5</a></li>
-              </ul>
-            </li>
-            <li class="nav-item"><a ui-sref="last">联系我们</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
