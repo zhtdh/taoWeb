@@ -451,15 +451,18 @@ def getArticleTypesByKind(p_dict,p_rtn):
         raise AppException('上传参数错误')
     if not (isinstance(p_dict['parentId'],str) and isinstance(p_dict['kind'],list)):
         raise AppException('上传参数错误')
-    pattern = '('
-    for p in p_dict['kind']:
-        pattern = pattern + p + '|'
-    pattern = len(pattern) == 1 and '()' or pattern[0:-1] + ')'
     if len(p_dict['parentId']) > 0:
         r = ArticleType.objects.filter(parent_id=p_dict['parentId'])
     else:
         r = ArticleType.objects.all()
-    rtn_list = list(r.filter(kind__regex=pattern).values('id','title'))
+    if len(p_dict['kind']) > 0:
+        pattern = '('
+        for p in p_dict['kind']:
+            pattern = pattern + p + '|'
+        #pattern = len(pattern) == 1 and '()' or pattern[0:-1] + ')'
+        pattern = pattern[0:-1] + ')'
+        r = r.filter(kind__regex=pattern)
+    rtn_list = list(r.values('id','title'))
     p_rtn.update({
         "rtnInfo": '成功',
         "rtnCode": 1,
@@ -470,7 +473,10 @@ def getArticleTypesByKind(p_dict,p_rtn):
 def getArticlesByKind(p_dict,p_rtn):
     '''
     模糊查询kind值，返回Article数组
-    :param p_dict: {kind:['',''],parentId:xxx,id:xxx,location: { pageCurrent:当前页, pageRows:一页的行数}
+    :param p_dict: {kind:['',''],parentId:xxx,id:xxx,
+                    location: { pageCurrent:当前页, pageRows:一页的行数},
+                    parentKind: ['xxx','xxx'],
+                    hasContent: 1 返回记录中包括content，other：不包括。
                     }
     :param p_rtn:
     :return:
@@ -489,26 +495,31 @@ def getArticlesByKind(p_dict,p_rtn):
         raise AppException('上传参数错误3')
     firstRow = (p_dict['location']['pageCurrent'] - 1) * p_dict['location']['pageRows']
     lastRow = firstRow + p_dict['location']['pageRows']
-
     if len(p_dict['id']) > 0:
-        rtn_list = list(Article.objects.filter(id=p_dict['id']).values('id','title')[firstRow:lastRow])
-        p_rtn.update({
-            "rtnInfo": "成功",
-            "rtnCode": 1,
-            "exObj":{
-                "contentList" : rtn_list
-            }
-        })
-        return
-    pattern = '('
-    for p in p_dict['kind']:
-        pattern = pattern + p + '|'
-    pattern = len(pattern) == 1 and '()' or pattern[0:-1] + ')'
-    if len(p_dict['parentId']) > 0:
-        r = Article.objects.filter(parent_id=p_dict['parentId'])
+        r = Article.objects.filter(id=p_dict['id'])
     else:
-        r = Article.objects.all()
-    rtn_list = list(r.filter(kind__regex=pattern).values('id','title')[firstRow:lastRow])
+        if len(p_dict['parentId']) > 0: #parentId
+            r = Article.objects.filter(parent_id=p_dict['parentId'])
+        else:
+            r = Article.objects.all()
+        if len(p_dict['kind']) > 0:
+            artKindReg = '('
+            for p in p_dict['kind']:
+                artKindReg = artKindReg + p + '|'
+            #pattern = len(pattern) == 1 and '()' or pattern[0:-1] + ')'
+            artKindReg = artKindReg[0:-1] + ')'
+            r = r.filter(kind_regex=artKindReg)
+        if len(p_dict['parentKind']) > 0:
+            colKindReg = '('
+            for p in p_dict['kind']:
+                colKindReg = colKindReg + p + '|'
+            colKindReg = colKindReg[0:-1] + ')'
+            r = r.filter(parent__kind__regex=colKindReg)
+    r = r.order_by('-rectime')
+    if p_dict['hasContent'] == 1:
+        rtn_list = list(r.values('id','title','content')[firstRow:lastRow])
+    else:
+        rtn_list = list(r.values('id','title')[firstRow:lastRow])
     p_rtn.update({
         "rtnInfo": "成功",
         "rtnCode": 1,
@@ -577,6 +588,14 @@ def dealREST(request):
                         "rtnInfo":"功能错误",
                         "rtnCode":-1
                     })
+    except AppException as e:
+        l_rtn = {
+            "alertType": 0,
+            "error":[],
+            "rtnInfo": str(e),
+            "rtnCode": -1,
+            "exObj":{}
+        }
     except Exception as e:
         log("ajaxResp.dealPAjax执行错误：%s" % str(e.args))
         l_rtn = {
