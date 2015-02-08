@@ -48,7 +48,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('acadmin.extools', {
       url: "/extools",
-      templateUrl: "partials/extools.html"
+      templateUrl: "partials/exTools.html"
     }) ;
 });
 app.controller("ctrlExtools",function($scope,blacAccess,blacUtil){

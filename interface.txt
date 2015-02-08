@@ -174,8 +174,15 @@ jpargs:{
  getForeCol: function(l_param){return httpQ(lpUrl,{func:'getForeCol',ex_parm:l_param  } ) } ,
  l_param = { kind: aKind , parentId: aParentId};
 
-  getForeArt: function(aLoc,aParentKind, aKind, aParentId, aId){return httpQ(lpUrl,{func:'getForeArt',
-    ex_parm:{location:aLoc,parentKind:aParentKind, kind:aKind,parentId:aParentId, id:aId}  } ) } ,
+  getForeArt: function(aLoc,aParentKind, aKind, aParentId, aId)
+  {return httpQ(lpUrl,{
+  func:'getForeArt',
+    }
+    ex_parm:{location:aLoc,parentKind:aParentKind,
+            kind:aKind,parentId:aParentId, id:aId}
+              }
+              )
+  } ,
     location: { pageCurrent: 1, pageRows: 10, pageTotal: 0  };
     parentKind: [",top,", "..."]
     kind: [",top,", "..."]

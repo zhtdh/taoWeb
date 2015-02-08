@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError,DatabaseError
 from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
-from App.utils import log,AppException
+from App.utils import log,AppException,logErr
 from App.models import *
 from App.ueditor.views import get_ueditor_controller
 
@@ -20,6 +20,25 @@ def paramCheck(standard_set,target_set,check_type):
     :param check_type: (‘必要’,'')
     :return:
     '''
+def getPageRowNo(p_dict):
+    '''
+    返回分页firstRow,lastRow
+    :param p_dict: {pageCurrent:当前页, pageRows:一页的行数,pageTotal: 0}
+    :return: (firstRowNo,lastRowNo)
+    '''
+    if 'pageCurrent' not in p_dict or 'pageRows' not in p_dict or 'pageTotal' not in p_dict:
+        raise AppException('上传分页参数错误')
+    if not (isinstance(p_dict['pageCurrent'],int) and \
+                    isinstance(p_dict['pageRows'],int) and \
+                    isinstance(p_dict['pageTotal'],int)):
+        raise AppException('上传分页参数错误')
+    firstRow = (p_dict['pageCurrent'] - 1) * p_dict['pageRows']
+    lastRow = firstRow + p_dict['pageRows']
+    if p_dict['pageTotal'] == 0:
+        rowTotal = 0
+    else:
+        rowTotal = -1;
+    return (firstRow,lastRow,rowTotal)
 def logon(session,p_user,p_rtn):
     '''
 
@@ -183,13 +202,10 @@ def getArticleList(p_dict,p_rtn):
     '''
     if 'columnId' not in p_dict or 'location' not in p_dict:
         raise AppException('上传参数错误')
-    if 'pageCurrent' not in p_dict['location'] or 'pageRows' not in p_dict['location'] or 'pageTotal' not in p_dict['location']:
-        raise AppException('上传参数错误')
-    firstRow = (p_dict['location']['pageCurrent'] - 1) * p_dict['location']['pageRows']
-    lastRow = firstRow + p_dict['location']['pageRows']
+    firstRow,lastRow,rowTotal = getPageRowNo(p_dict['location'])
     articles = list(Article.objects.filter(parent_id=p_dict['columnId'])\
                    .order_by('-rectime').values('id','title','recname','rectime')[firstRow:lastRow])
-    if p_dict['location']['pageTotal'] == 0:
+    if rowTotal == 0:
         total = Article.objects.filter(parent_id=p_dict['columnId']).count()
     else:
         total = -1
@@ -390,12 +406,10 @@ def getUserList(p_dict,p_rtn):
      }
     :return:
     '''
-    if 'pageCurrent' not in p_dict or 'pageRows' not in p_dict or 'pageTotal' not in p_dict:
-        raise AppException('上传参数错误')
-    firstRow = (p_dict['pageCurrent'] - 1) * p_dict['pageRows']
-    lastRow = firstRow + p_dict['pageRows']
+
+    firstRow,lastRow,rowTotal = getPageRowNo(p_dict)
     users = list(User.objects.exclude(username__exact='Admin').order_by('username').values('username')[firstRow:lastRow])
-    if p_dict['pageTotal'] == 0:
+    if rowTotal == 0:
         total = User.objects.all().count()
     else:
         total = -1
@@ -462,7 +476,7 @@ def getArticleTypesByKind(p_dict,p_rtn):
         #pattern = len(pattern) == 1 and '()' or pattern[0:-1] + ')'
         pattern = pattern[0:-1] + ')'
         r = r.filter(kind__regex=pattern)
-    rtn_list = list(r.values('id','title'))
+    rtn_list = list(r.values('id','title','link','kind','parent_id'))
     p_rtn.update({
         "rtnInfo": '成功',
         "rtnCode": 1,
@@ -474,7 +488,7 @@ def getArticlesByKind(p_dict,p_rtn):
     '''
     模糊查询kind值，返回Article数组
     :param p_dict: {kind:['',''],parentId:xxx,id:xxx,
-                    location: { pageCurrent:当前页, pageRows:一页的行数},
+                    location: { pageCurrent: 1, pageRows: 10, pageTotal: 0},
                     parentKind: ['xxx','xxx'],
                     hasContent: 1 返回记录中包括content，other：不包括。
                     }
@@ -482,19 +496,15 @@ def getArticlesByKind(p_dict,p_rtn):
     :return:
     '''
     p_set = set(p_dict.keys())
-    p_checkset = set(['kind','parentId','id','location'])
-    #if p_set != p_checkset:
-    #    raise AppException('上传参数错误1')
+    p_checkset = set(['kind','parentId','id','location','parentKind'])
+    if p_set != p_checkset:
+        raise AppException('上传参数错误1')
     if not (isinstance(p_dict['parentId'],str) and\
                     isinstance(p_dict['id'],str) and\
                     isinstance(p_dict['kind'],list) and\
                     isinstance(p_dict['location'],dict)):
         raise AppException('上传参数错误2')
-    if not (isinstance(p_dict['location']['pageCurrent'],int) and\
-                    isinstance(p_dict['location']['pageRows'],int)):
-        raise AppException('上传参数错误3')
-    firstRow = (p_dict['location']['pageCurrent'] - 1) * p_dict['location']['pageRows']
-    lastRow = firstRow + p_dict['location']['pageRows']
+    firstRow,lastRow,rowTotal = getPageRowNo(p_dict['location'])
     if len(p_dict['id']) > 0:
         r = Article.objects.filter(id=p_dict['id'])
     else:
@@ -515,15 +525,20 @@ def getArticlesByKind(p_dict,p_rtn):
                 colKindReg = colKindReg + p + '|'
             colKindReg = colKindReg[0:-1] + ')'
             r = r.filter(parent__kind__regex=colKindReg)
-    r = r.order_by('-rectime')
-    if p_dict['hasContent'] == 1:
-        rtn_list = list(r.values('id','title','content')[firstRow:lastRow])
+    if rowTotal == 0:
+        total = r.count()
     else:
-        rtn_list = list(r.values('id','title')[firstRow:lastRow])
+        total = -1
+    r = r.order_by('-rectime')
+    if p_dict.get('hasContent',0) == 1:
+        rtn_list = list(r.values('id','title','content','parent_id','kind','imglink','videolink')[firstRow:lastRow])
+    else:
+        rtn_list = list(r.values('id','title','parent_id','kind','imglink','videolink')[firstRow:lastRow])
     p_rtn.update({
         "rtnInfo": "成功",
         "rtnCode": 1,
         "exObj":{
+            "rowCount" : total,
             "contentList" : rtn_list
         }
     })
