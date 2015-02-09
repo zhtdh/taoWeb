@@ -135,7 +135,6 @@ myApp.controller("angIndex", function($scope, blacAccess, blacPage){
 
 myApp.controller("angIndex", function($scope, blacAccess, blacPage){
   var lp = $scope;
-  console.log("ffffeeeeeeeef");
   function getForeCol( aKind , aParentId, aCallback ) {
     var l_param = { kind: aKind , parentId: aParentId};
     console.log("akind " , aKind);
@@ -176,6 +175,7 @@ myApp.controller("angIndex", function($scope, blacAccess, blacPage){
   lp.getArt = function() { console.log("get art");
     psGetContent(1, [], [], 'C67743685CF00001FFEB15602B167D') };
 
+  /*
   lp.ngNavList = []
   getForeCol([',nav0,'], "", function(aErr, aRtn){
     if (aRtn) lp.ngNavList = aRtn.exObj.contentList;
@@ -186,6 +186,6 @@ myApp.controller("angIndex", function($scope, blacAccess, blacPage){
       })
     });
   })
-
+  */
 
 });
